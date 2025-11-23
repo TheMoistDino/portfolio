@@ -178,7 +178,7 @@ const ProjectModal = ({ project, onClose }) => {
             </div>
           </div>
 
-          {/* --- VIDEO SECTION (YouTube or Local) --- */}
+          {/* --- MAIN VIDEO SECTION (YouTube or Local) --- */}
           {(project.youtubeId || project.video) && (
             <div className="mb-8">
                <div className="flex items-center gap-3 mb-3">
@@ -207,7 +207,7 @@ const ProjectModal = ({ project, onClose }) => {
           )}
 
           {/* Resources / Assets Area - Only show if items exist */}
-          {(project.hasReport || project.hasImages) && (
+          {(project.hasReport || (project.galleryImages && project.galleryImages.length > 0)) && (
             <div className="space-y-4">
               <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Project Documentation</h4>
               
@@ -225,30 +225,33 @@ const ProjectModal = ({ project, onClose }) => {
                   </a>
                 )}
 
-                {/* Gallery Images */}
-                {project.hasImages && (
+                {/* Gallery Images/Videos (Dynamic) */}
+                {project.galleryImages && project.galleryImages.length > 0 && (
                   <div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700">
                     <div className="flex items-center gap-3 mb-3">
                       <ImageIcon size={20} className="text-blue-400" />
-                      <span className="font-semibold text-slate-200">Gallery (CAD & Photos)</span>
+                      <span className="font-semibold text-slate-200">Gallery</span>
                     </div>
-                    {/* Placeholder for Gallery - User to replace src with actual paths */}
-                    <div className="grid grid-cols-2 gap-2">
-                        <div className="aspect-video bg-slate-900 rounded-lg flex items-center justify-center text-slate-600 border border-slate-800 overflow-hidden relative group">
-                          {/* REPLACE THIS WITH: <img src="cad-model.png" className="w-full h-full object-cover" /> */}
-                          <img src="seaperch.png" className="w-full h-full object-cover" />
-                        </div>
-                        <div className="aspect-video bg-slate-900 rounded-lg flex items-center justify-center text-slate-600 border border-slate-800 overflow-hidden relative group">
-                          {/* REPLACE THIS WITH: <img src="robot-photo.jpg" className="w-full h-full object-cover" /> */}
-                          <img src="robot2024.jpg" className="w-full h-full object-cover" />
-                        </div><div className="aspect-video bg-slate-900 rounded-lg flex items-center justify-center text-slate-600 border border-slate-800 overflow-hidden relative group">
-                          {/* REPLACE THIS WITH: <img src="cad-model.png" className="w-full h-full object-cover" /> */}
-                          <img src="seaperch.png" className="w-full h-full object-cover" />
-                        </div>
-                        <div className="aspect-video bg-slate-900 rounded-lg flex items-center justify-center text-slate-600 border border-slate-800 overflow-hidden relative group">
-                          {/* REPLACE THIS WITH: <img src="robot-photo.jpg" className="w-full h-full object-cover" /> */}
-                          <img src="robot2025.jpg" className="w-full h-full object-cover" />
-                        </div>
+                    <div className={`grid gap-2 ${project.galleryImages.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                        {project.galleryImages.map((media, idx) => (
+                          <div key={idx} className="aspect-video bg-slate-900 rounded-lg flex items-center justify-center text-slate-600 border border-slate-800 overflow-hidden relative group">
+                            {media.type === 'video' ? (
+                              <video 
+                                src={media.src} 
+                                className="w-full h-full object-cover" 
+                                controls 
+                                title={media.label}
+                              />
+                            ) : (
+                              // In real usage, replace the placeholder logic below with:
+                              // <img src={media.src} alt={media.label} className="w-full h-full object-cover" />
+                              <span className="text-xs text-center px-2 z-10">
+                                {media.label}<br/>
+                                <span className="text-[10px] opacity-50">({media.src})</span>
+                              </span>
+                            )}
+                          </div>
+                        ))}
                     </div>
                   </div>
                 )}
@@ -286,12 +289,11 @@ const Portfolio = () => {
       tags: ["Python", "Qiskit", "Quantum Computing", "Hackathon"],
       icon: Cpu,
       hasReport: false, 
-      hasImages: false,
+      galleryImages: [], // No images for this project
       video: null, 
       youtubeId: null, 
       reportLink: "#"
     },
-    // --- FTC PROJECT ENTRY ---
     {
       id: 2,
       title: "FIRST Tech Challenge (FTC)",
@@ -301,9 +303,15 @@ const Portfolio = () => {
       tags: ["Java", "Android Studio", "Onshape CAD", "PID Control", "Robotics"],
       icon: Bot, 
       hasReport: false, 
-      hasImages: true,
+      galleryImages: [
+        { type: 'image', src: "robot2025.png", label: "2025 Robot CAD Model" },
+        { type: 'image', src: "robot2024.jpg", label: "2024 Competition Robot" },
+        { type: 'image', src: "robot2023.jpg", label: "2023 Early Competition Robot" },
+        // Example of how to add a small video to the gallery:
+        { type: 'video', src: "ftc-short-clip.mp4", label: "Autonomous Test" }
+      ],
       video: null,
-      youtubeId: null, // Set to null so button says "Click for details"
+      youtubeId: null, 
       reportLink: "#"
     },
     {
@@ -315,9 +323,11 @@ const Portfolio = () => {
       tags: ["Technical Writing", "Data Visualization", "Robotics", "Google Sheets"],
       icon: FileText,
       hasReport: true, 
-      hasImages: true,
+      galleryImages: [
+        { type: 'image', src: "seaperch.jpg", label: "Submerged ROV" }
+      ],
       video: null,
-      youtubeId: "XRPzDltYngE", // Seaperch Video
+      youtubeId: "XRPzDltYngE", 
       reportLink: "technical_design_report.pdf" 
     },
     {
@@ -329,9 +339,11 @@ const Portfolio = () => {
       tags: ["Engineering", "Fabrication", "Team Leadership", "Mechanics"],
       icon: Wrench,
       hasReport: false, 
-      hasImages: true,
+      galleryImages: [
+        { type: 'video', src: "mesa_machine.mp4", label: "Testing" }
+      ],
       video: null,
-      youtubeId: "bjFtC3qG3AQ", // MESA Machine Video
+      youtubeId: "bjFtC3qG3AQ", 
       reportLink: "#"
     }
   ];
