@@ -19,7 +19,8 @@ import {
   XCircle,
   Image as ImageIcon,
   Video,
-  Youtube
+  Youtube,
+  Bot
 } from 'lucide-react';
 
 // --- COMPONENTS ---
@@ -182,7 +183,7 @@ const ProjectModal = ({ project, onClose }) => {
             <div className="mb-8">
                <div className="flex items-center gap-3 mb-3">
                  {project.youtubeId ? <Youtube size={20} className="text-red-500" /> : <Video size={20} className="text-blue-400" />}
-                 <span className="font-semibold text-slate-200">Demo Footage</span>
+                 <span className="font-semibold text-slate-200">Project Footage</span>
                </div>
                
                <div className="rounded-xl overflow-hidden border border-slate-700 shadow-xl bg-black w-full aspect-video">
@@ -205,46 +206,55 @@ const ProjectModal = ({ project, onClose }) => {
             </div>
           )}
 
-          {/* Resources / Assets Area */}
-          <div className="space-y-4">
-            <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Project Documentation</h4>
-            
-            <div className="grid gap-3">
-              {project.hasReport && (
-                <a href={project.reportLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 bg-slate-800/50 rounded-xl border border-slate-700 hover:border-blue-500 hover:bg-slate-800 transition-all group">
-                  <div className="p-2 bg-blue-900/30 text-blue-400 rounded-lg group-hover:text-white transition-colors">
-                    <FileText size={20} />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-slate-200">Technical Design Report</div>
-                    <div className="text-xs text-slate-500">PDF Documentation</div>
-                  </div>
-                  <ExternalLink size={16} className="ml-auto text-slate-500 group-hover:text-blue-400" />
-                </a>
-              )}
+          {/* Resources / Assets Area - Only show if items exist */}
+          {(project.hasReport || project.hasImages) && (
+            <div className="space-y-4">
+              <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Project Documentation</h4>
+              
+              <div className="grid gap-3">
+                {project.hasReport && (
+                  <a href={project.reportLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 bg-slate-800/50 rounded-xl border border-slate-700 hover:border-blue-500 hover:bg-slate-800 transition-all group">
+                    <div className="p-2 bg-blue-900/30 text-blue-400 rounded-lg group-hover:text-white transition-colors">
+                      <FileText size={20} />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-slate-200">Technical Design Report</div>
+                      <div className="text-xs text-slate-500">PDF Documentation</div>
+                    </div>
+                    <ExternalLink size={16} className="ml-auto text-slate-500 group-hover:text-blue-400" />
+                  </a>
+                )}
 
-              {/* Gallery Images (Only shows if no video, or alongside video) */}
-              {project.hasImages && (
-                 <div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700">
-                   <div className="flex items-center gap-3 mb-3">
-                     <ImageIcon size={20} className="text-blue-400" />
-                     <span className="font-semibold text-slate-200">Gallery (CAD & Photos)</span>
-                   </div>
-                   {/* Placeholder for Gallery - User to replace src with actual paths */}
-                   <div className="grid grid-cols-2 gap-2">
-                      <div className="aspect-video bg-slate-900 rounded-lg flex items-center justify-center text-slate-600 border border-slate-800 overflow-hidden relative group">
-                         {/* REPLACE THIS WITH: <img src="/cad-model.png" className="w-full h-full object-cover" /> */}
-                         <span className="text-xs text-center px-2 z-10">CAD Model<br/>(Add to public/)</span>
-                      </div>
-                      <div className="aspect-video bg-slate-900 rounded-lg flex items-center justify-center text-slate-600 border border-slate-800 overflow-hidden relative group">
-                         {/* REPLACE THIS WITH: <img src="/robot-photo.jpg" className="w-full h-full object-cover" /> */}
-                         <span className="text-xs text-center px-2 z-10">Prototype<br/>(Add to public/)</span>
-                      </div>
-                   </div>
-                 </div>
-              )}
+                {/* Gallery Images */}
+                {project.hasImages && (
+                  <div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700">
+                    <div className="flex items-center gap-3 mb-3">
+                      <ImageIcon size={20} className="text-blue-400" />
+                      <span className="font-semibold text-slate-200">Gallery (CAD & Photos)</span>
+                    </div>
+                    {/* Placeholder for Gallery - User to replace src with actual paths */}
+                    <div className="grid grid-cols-2 gap-2">
+                        <div className="aspect-video bg-slate-900 rounded-lg flex items-center justify-center text-slate-600 border border-slate-800 overflow-hidden relative group">
+                          {/* REPLACE THIS WITH: <img src="cad-model.png" className="w-full h-full object-cover" /> */}
+                          <img src="seaperch.png" className="w-full h-full object-cover" />
+                        </div>
+                        <div className="aspect-video bg-slate-900 rounded-lg flex items-center justify-center text-slate-600 border border-slate-800 overflow-hidden relative group">
+                          {/* REPLACE THIS WITH: <img src="robot-photo.jpg" className="w-full h-full object-cover" /> */}
+                          <img src="robot2024.jpg" className="w-full h-full object-cover" />
+                        </div><div className="aspect-video bg-slate-900 rounded-lg flex items-center justify-center text-slate-600 border border-slate-800 overflow-hidden relative group">
+                          {/* REPLACE THIS WITH: <img src="cad-model.png" className="w-full h-full object-cover" /> */}
+                          <img src="seaperch.png" className="w-full h-full object-cover" />
+                        </div>
+                        <div className="aspect-video bg-slate-900 rounded-lg flex items-center justify-center text-slate-600 border border-slate-800 overflow-hidden relative group">
+                          {/* REPLACE THIS WITH: <img src="robot-photo.jpg" className="w-full h-full object-cover" /> */}
+                          <img src="robot2025.jpg" className="w-full h-full object-cover" />
+                        </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Footer */}
@@ -278,21 +288,22 @@ const Portfolio = () => {
       hasReport: false, 
       hasImages: false,
       video: null, 
-      youtubeId: null, // Add ID like "dQw4w9WgXcQ" here
+      youtubeId: null, 
       reportLink: "#"
     },
+    // --- FTC PROJECT ENTRY ---
     {
       id: 2,
-      title: "MESA Machine: Wind-Powered Car",
-      date: "Sep 2023 - Apr 2024",
-      shortDesc: "Engineered a Rube-Goldberg-style machine from recyclable materials.",
-      fullDescription: "Served as Project Lead for a team engineering a complex Rube-Goldberg machine. The device was constructed exclusively from recyclable materials and featured a wind-powered vehicle mechanism. I managed the design iteration process and served as the lead troubleshooter during high-pressure competition environments, performing real-time repairs to ensure operation.",
-      tags: ["Engineering", "Fabrication", "Team Leadership", "Mechanics"],
-      icon: Wrench,
+      title: "FIRST Tech Challenge (FTC)",
+      date: "Aug 2022 - May 2025",
+      shortDesc: "Lead Programmer & Club President. Engineered autonomous robot control systems.",
+      fullDescription: "As Club President and Lead Programmer for Teams 6373 & 6374, I engineered 100% of the robot's codebase in Java using Android Studio. I developed complex autonomous algorithms using computer vision and PID control loops to ensure precise movement. Additionally, I directed the complete robot build cycle, from CAD modeling in Onshape to 3D printing custom components and soldering electronics. My leadership resulted in 400% club growth and recognition as a Finalist Alliance (2023).",
+      tags: ["Java", "Android Studio", "Onshape CAD", "PID Control", "Robotics"],
+      icon: Bot, 
       hasReport: false, 
       hasImages: true,
       video: null,
-      youtubeId: "bjFtC3qG3AQ", // <--- REPLACE THIS WITH YOUR VIDEO ID
+      youtubeId: null, // Set to null so button says "Click for details"
       reportLink: "#"
     },
     {
@@ -306,8 +317,22 @@ const Portfolio = () => {
       hasReport: true, 
       hasImages: true,
       video: null,
-      youtubeId: "dQw4w9WgXcQ", // <--- REPLACE THIS WITH YOUR VIDEO ID
-      reportLink: "/technical_design_report.pdf" 
+      youtubeId: "XRPzDltYngE", // Seaperch Video
+      reportLink: "technical_design_report.pdf" 
+    },
+    {
+      id: 4,
+      title: "MESA Machine: Wind-Powered Car",
+      date: "Sep 2023 - Apr 2024",
+      shortDesc: "Engineered a Rube-Goldberg-style machine from recyclable materials.",
+      fullDescription: "Served as Project Lead for a team engineering a complex Rube-Goldberg machine. The device was constructed exclusively from recyclable materials and featured a wind-powered vehicle mechanism. I managed the design iteration process and served as the lead troubleshooter during high-pressure competition environments, performing real-time repairs to ensure operation.",
+      tags: ["Engineering", "Fabrication", "Team Leadership", "Mechanics"],
+      icon: Wrench,
+      hasReport: false, 
+      hasImages: true,
+      video: null,
+      youtubeId: "bjFtC3qG3AQ", // MESA Machine Video
+      reportLink: "#"
     }
   ];
 
@@ -430,9 +455,12 @@ const Portfolio = () => {
                 <a href="mailto:darrenluu2025@gmail.com" className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-500 transition-all hover:-translate-y-0.5 shadow-lg shadow-blue-900/20">
                   <Mail size={18} /> Contact Me
                 </a>
-                <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-6 py-3 bg-slate-800 text-slate-200 rounded-lg font-medium hover:bg-slate-700 border border-slate-700 transition-all hover:-translate-y-0.5">
+                
+                {/* FIXED: No leading slash here */}
+                <a href="resume.pdf" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-6 py-3 bg-slate-800 text-slate-200 rounded-lg font-medium hover:bg-slate-700 border border-slate-700 transition-all hover:-translate-y-0.5">
                   <Download size={18} /> Resume
                 </a>
+
                 <a href="https://github.com/TheMoistDino" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-6 py-3 bg-slate-800 text-slate-200 rounded-lg font-medium hover:bg-slate-700 border border-slate-700 transition-all hover:-translate-y-0.5">
                   <Github size={18} /> GitHub
                 </a>
@@ -637,7 +665,9 @@ const Portfolio = () => {
                           ))}
                         </div>
                         <div className="pt-4 border-t border-slate-700 flex justify-between items-center text-xs">
-                          <span className="text-blue-400 font-medium">Click for details & video</span>
+                          <span className="text-blue-400 font-medium">
+                            {(project.video || project.youtubeId) ? "Click for details & video" : "Click for details"}
+                          </span>
                           <ChevronRight size={14} className="text-slate-500 group-hover:translate-x-1 transition-transform" />
                         </div>
                       </div>
