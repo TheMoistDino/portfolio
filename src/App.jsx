@@ -20,7 +20,11 @@ import {
   Image as ImageIcon,
   Video,
   Youtube,
-  Bot
+  Bot,
+  Users,
+  TrendingUp,
+  Zap,
+  Maximize2
 } from 'lucide-react';
 
 // --- COMPONENTS ---
@@ -143,130 +147,185 @@ const FadeInSection = ({ children }) => {
   );
 };
 
-// 3. Project Modal Component
+// 3. Project Modal Component with Lightbox
 const ProjectModal = ({ project, onClose }) => {
+  const [lightboxMedia, setLightboxMedia] = useState(null);
+
   if (!project) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm" onClick={onClose}>
-      <div className="bg-slate-900 border border-slate-700 w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
-        
-        {/* Header */}
-        <div className="p-6 border-b border-slate-700 flex justify-between items-center bg-slate-800/50 shrink-0">
-          <div>
-            <h3 className="text-2xl font-bold text-slate-100">{project.title}</h3>
-            <span className="text-blue-400 font-mono text-sm">{project.date}</span>
-          </div>
-          <button onClick={onClose} className="p-2 hover:bg-slate-700 rounded-full transition-colors text-slate-400 hover:text-white">
-            <XCircle size={24} />
+    <>
+      {/* --- LIGHTBOX OVERLAY --- */}
+      {lightboxMedia && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/95 backdrop-blur-md p-4 transition-all animate-in fade-in duration-200" onClick={() => setLightboxMedia(null)}>
+          <button 
+            onClick={() => setLightboxMedia(null)}
+            className="absolute top-4 right-4 p-2 bg-slate-800 rounded-full text-white hover:bg-slate-700 hover:text-blue-400 transition-colors border border-slate-700 z-50"
+          >
+            <X size={28} />
           </button>
-        </div>
-
-        {/* Body (Scrollable) */}
-        <div className="p-6 overflow-y-auto">
-          <p className="text-slate-300 text-lg leading-relaxed mb-6">{project.fullDescription}</p>
           
-          {/* Tech Stack */}
-          <div className="mb-8">
-            <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Technologies</h4>
-            <div className="flex flex-wrap gap-2">
-              {project.tags.map((tag, i) => (
-                <span key={i} className="px-3 py-1 bg-slate-800 text-blue-300 rounded-full text-sm border border-slate-700">
-                  {tag}
-                </span>
-              ))}
+          <div className="relative max-w-full max-h-full flex flex-col items-center justify-center" onClick={(e) => e.stopPropagation()}>
+            {lightboxMedia.type === 'video' ? (
+              <video 
+                src={lightboxMedia.src} 
+                controls 
+                autoPlay 
+                className="max-w-[90vw] max-h-[80vh] rounded-lg border border-slate-700 shadow-2xl" 
+              />
+            ) : (
+              <img 
+                src={lightboxMedia.src} 
+                alt={lightboxMedia.label} 
+                className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg border border-slate-700 shadow-2xl" 
+              />
+            )}
+            <div className="mt-4 px-4 py-2 bg-slate-900/80 rounded-full text-slate-200 text-sm border border-slate-700 backdrop-blur-sm">
+              {lightboxMedia.label}
             </div>
           </div>
+        </div>
+      )}
 
-          {/* --- MAIN VIDEO SECTION (YouTube or Local) --- */}
-          {(project.youtubeId || project.video) && (
-            <div className="mb-8">
-               <div className="flex items-center gap-3 mb-3">
-                 {project.youtubeId ? <Youtube size={20} className="text-red-500" /> : <Video size={20} className="text-blue-400" />}
-                 <span className="font-semibold text-slate-200">Project Footage</span>
-               </div>
-               
-               <div className="rounded-xl overflow-hidden border border-slate-700 shadow-xl bg-black w-full aspect-video">
-                 {project.youtubeId ? (
-                   <iframe 
-                     className="w-full h-full"
-                     src={`https://www.youtube.com/embed/${project.youtubeId}`} 
-                     title="YouTube video player" 
-                     frameBorder="0" 
-                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                     referrerPolicy="strict-origin-when-cross-origin" 
-                     allowFullScreen
-                   ></iframe>
-                 ) : (
-                   <video controls className="w-full h-full" src={project.video}>
-                     Your browser does not support the video tag.
-                   </video>
-                 )}
-               </div>
+      {/* --- MAIN MODAL --- */}
+      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm" onClick={onClose}>
+        <div className="bg-slate-900 border border-slate-700 w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
+          
+          {/* Header */}
+          <div className="p-6 border-b border-slate-700 flex justify-between items-center bg-slate-800/50 shrink-0">
+            <div>
+              <h3 className="text-2xl font-bold text-slate-100">{project.title}</h3>
+              <span className="text-blue-400 font-mono text-sm">{project.date}</span>
             </div>
-          )}
+            <button onClick={onClose} className="p-2 hover:bg-slate-700 rounded-full transition-colors text-slate-400 hover:text-white">
+              <XCircle size={24} />
+            </button>
+          </div>
 
-          {/* Resources / Assets Area - Only show if items exist */}
-          {(project.hasReport || (project.galleryImages && project.galleryImages.length > 0)) && (
-            <div className="space-y-4">
-              <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Project Documentation</h4>
-              
-              <div className="grid gap-3">
-                {project.hasReport && (
-                  <a href={project.reportLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 bg-slate-800/50 rounded-xl border border-slate-700 hover:border-blue-500 hover:bg-slate-800 transition-all group">
-                    <div className="p-2 bg-blue-900/30 text-blue-400 rounded-lg group-hover:text-white transition-colors">
-                      <FileText size={20} />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-slate-200">Technical Design Report</div>
-                      <div className="text-xs text-slate-500">PDF Documentation</div>
-                    </div>
-                    <ExternalLink size={16} className="ml-auto text-slate-500 group-hover:text-blue-400" />
-                  </a>
-                )}
-
-                {/* Gallery Images/Videos (Dynamic) */}
-                {project.galleryImages && project.galleryImages.length > 0 && (
-                  <div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700">
-                    <div className="flex items-center gap-3 mb-3">
-                      <ImageIcon size={20} className="text-blue-400" />
-                      <span className="font-semibold text-slate-200">Gallery</span>
-                    </div>
-                    <div className={`grid gap-2 ${project.galleryImages.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
-                        {project.galleryImages.map((media, idx) => (
-                          <div key={idx} className="aspect-video bg-slate-900 rounded-lg flex items-center justify-center text-slate-600 border border-slate-800 overflow-hidden relative group">
-                            {media.type === 'video' ? (
-                              <video 
-                                src={media.src} 
-                                className="w-full h-full object-cover" 
-                                controls 
-                                title={media.label}
-                              />
-                            ) : (
-                              <img 
-                                src={media.src} 
-                                alt={media.label} 
-                                className="w-full h-full object-cover" 
-                              />
-                            )}
-                          </div>
-                        ))}
-                    </div>
-                  </div>
-                )}
+          {/* Body (Scrollable) */}
+          <div className="p-6 overflow-y-auto custom-scrollbar">
+            <p className="text-slate-300 text-lg leading-relaxed mb-6">{project.fullDescription}</p>
+            
+            {/* Tech Stack */}
+            <div className="mb-8">
+              <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Technologies</h4>
+              <div className="flex flex-wrap gap-2">
+                {project.tags.map((tag, i) => (
+                  <span key={i} className="px-3 py-1 bg-slate-800 text-blue-300 rounded-full text-sm border border-slate-700">
+                    {tag}
+                  </span>
+                ))}
               </div>
             </div>
-          )}
-        </div>
 
-        {/* Footer */}
-        <div className="p-4 border-t border-slate-700 bg-slate-950/50 flex justify-end shrink-0">
-          <button onClick={onClose} className="px-5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-medium transition-colors">
-            Close
-          </button>
+            {/* --- VIDEO SECTION (YouTube or Local) --- */}
+            {(project.youtubeId || project.video) && (
+              <div className="mb-8">
+                <div className="flex items-center gap-3 mb-3">
+                  {project.youtubeId ? <Youtube size={20} className="text-red-500" /> : <Video size={20} className="text-blue-400" />}
+                  <span className="font-semibold text-slate-200">Project Footage</span>
+                </div>
+                
+                <div className="rounded-xl overflow-hidden border border-slate-700 shadow-xl bg-black w-full aspect-video">
+                  {project.youtubeId ? (
+                    <iframe 
+                      className="w-full h-full"
+                      src={`https://www.youtube.com/embed/${project.youtubeId}`} 
+                      title="YouTube video player" 
+                      frameBorder="0" 
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                      referrerPolicy="strict-origin-when-cross-origin" 
+                      allowFullScreen
+                    ></iframe>
+                  ) : (
+                    <video controls className="w-full h-full" src={project.video}>
+                      Your browser does not support the video tag.
+                    </video>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Resources / Assets Area - Only show if items exist */}
+            {(project.hasReport || (project.galleryImages && project.galleryImages.length > 0)) && (
+              <div className="space-y-4">
+                <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Project Documentation</h4>
+                
+                <div className="grid gap-3">
+                  {project.hasReport && (
+                    <a href={project.reportLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 bg-slate-800/50 rounded-xl border border-slate-700 hover:border-blue-500 hover:bg-slate-800 transition-all group">
+                      <div className="p-2 bg-blue-900/30 text-blue-400 rounded-lg group-hover:text-white transition-colors">
+                        <FileText size={20} />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-slate-200">Technical Design Report</div>
+                        <div className="text-xs text-slate-500">PDF Documentation</div>
+                      </div>
+                      <ExternalLink size={16} className="ml-auto text-slate-500 group-hover:text-blue-400" />
+                    </a>
+                  )}
+
+                  {/* Gallery Images/Videos (Dynamic) */}
+                  {project.galleryImages && project.galleryImages.length > 0 && (
+                    <div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700">
+                      <div className="flex items-center gap-3 mb-3">
+                        <ImageIcon size={20} className="text-blue-400" />
+                        <span className="font-semibold text-slate-200">Gallery <span className="text-slate-500 font-normal text-sm ml-2">(Tap to enlarge)</span></span>
+                      </div>
+                      <div className={`grid gap-3 ${project.galleryImages.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                          {project.galleryImages.map((media, idx) => (
+                            <div 
+                              key={idx} 
+                              onClick={() => setLightboxMedia(media)}
+                              className="aspect-video bg-slate-900 rounded-lg flex items-center justify-center text-slate-600 border border-slate-800 overflow-hidden relative group cursor-zoom-in hover:border-blue-500/50 transition-all"
+                            >
+                              {media.type === 'video' ? (
+                                <div className="relative w-full h-full">
+                                  <video 
+                                    src={media.src} 
+                                    className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" 
+                                    muted
+                                  />
+                                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-transparent transition-colors">
+                                    <div className="p-2 bg-black/50 rounded-full text-white">
+                                      <Video size={24} />
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : (
+                                <>
+                                  <img 
+                                    src={media.src} 
+                                    alt={media.label} 
+                                    className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-500" 
+                                  />
+                                  <div className="absolute top-2 right-2 p-1.5 bg-black/60 rounded-lg text-white opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
+                                    <Maximize2 size={14} />
+                                  </div>
+                                  <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/80 to-transparent text-xs text-center text-white">
+                                    {media.label}
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="p-4 border-t border-slate-700 bg-slate-950/50 flex justify-end shrink-0">
+            <button onClick={onClose} className="px-5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-medium transition-colors">
+              Close
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
@@ -346,6 +405,17 @@ const Portfolio = () => {
       reportLink: "#"
     }
   ];
+
+  // Helper functions to open specific projects from Experience section
+  const openFTCProject = () => {
+    const project = projects.find(p => p.id === 2);
+    if (project) setSelectedProject(project);
+  };
+
+  const openMESAProject = () => {
+    const project = projects.find(p => p.id === 4);
+    if (project) setSelectedProject(project);
+  };
 
   // Scroll logic
   useEffect(() => {
@@ -467,7 +537,6 @@ const Portfolio = () => {
                   <Mail size={18} /> Contact Me
                 </a>
                 
-                {/* FIXED: No leading slash here */}
                 <a href="resume.pdf" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-6 py-3 bg-slate-800 text-slate-200 rounded-lg font-medium hover:bg-slate-700 border border-slate-700 transition-all hover:-translate-y-0.5">
                   <Download size={18} /> Resume
                 </a>
@@ -478,6 +547,38 @@ const Portfolio = () => {
                 <a href="https://www.linkedin.com/in/dwluu/" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-6 py-3 bg-slate-800 text-slate-200 rounded-lg font-medium hover:bg-slate-700 border border-slate-700 transition-all hover:-translate-y-0.5">
                   <Linkedin size={18} /> LinkedIn
                 </a>
+              </div>
+            </div>
+          </FadeInSection>
+        </section>
+
+        {/* --- STATS BAR --- */}
+        <section className="py-10 border-y border-slate-800 bg-slate-900/30">
+          <FadeInSection>
+            <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+              <div className="space-y-1">
+                <div className="text-3xl font-bold text-white flex items-center justify-center gap-2">
+                  <Award className="text-yellow-500" size={24} /> 4.0
+                </div>
+                <div className="text-sm text-slate-400 uppercase tracking-wide">UCLA GPA</div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-3xl font-bold text-white flex items-center justify-center gap-2">
+                  <TrendingUp className="text-green-400" size={24} /> 400%
+                </div>
+                <div className="text-sm text-slate-400 uppercase tracking-wide">Club Growth</div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-3xl font-bold text-white flex items-center justify-center gap-2">
+                  <Users className="text-blue-400" size={24} /> 50+
+                </div>
+                <div className="text-sm text-slate-400 uppercase tracking-wide">Students Mentored</div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-3xl font-bold text-white flex items-center justify-center gap-2">
+                  <Zap className="text-purple-400" size={24} /> 100%
+                </div>
+                <div className="text-sm text-slate-400 uppercase tracking-wide">Robot Code Engineered</div>
               </div>
             </div>
           </FadeInSection>
@@ -499,10 +600,10 @@ const Portfolio = () => {
                     I am currently a first-year <strong>Computer Engineering</strong> student at <strong>UCLA</strong> with a strong foundation in both software and hardware principles. My academic journey began at Paloma Valley High School where I graduated as Valedictorian with a 4.0 GPA.
                   </p>
                   <p>
-                    My passion lies at the intersection of innovation and engineering. From programming autonomous robots for the <strong>FIRST Tech Challenge</strong> to developing quantum randomness applications during hackathons, I thrive on solving complex technical problems.
+                    My passion lies at the intersection of innovation and engineering. My technical journey has evolved from mechanical fabrication (Wind-Powered Car) to complex electro-mechanical systems (FTC Robotics), and now into the realms of quantum computing and machine learning.
                   </p>
                   <p>
-                    Beyond technical skills, I have extensive leadership experience as a Club President and Project Lead, where I've mentored peers, managed build cycles, and fostered collaborative environments.
+                    Whether I'm programming autonomous path following, analyzing quantum states, or mentoring the next generation of engineers, I am driven by a curiosity to understand how things work and the technical skills to build them better.
                   </p>
                 </div>
 
@@ -575,7 +676,7 @@ const Portfolio = () => {
               </div>
               
               <div className="space-y-12">
-                {/* Job 1 */}
+                {/* Job 1 - FTC */}
                 <div className="relative pl-8 md:pl-0">
                   <div className="hidden md:block absolute left-[147px] top-0 bottom-0 w-px bg-slate-800"></div>
                   <div className="md:flex gap-12 group">
@@ -587,16 +688,27 @@ const Portfolio = () => {
                     <div className="flex-1">
                       <h3 className="text-xl font-bold text-slate-100 group-hover:text-blue-400 transition-colors">Club President & Lead Programmer</h3>
                       <h4 className="text-lg text-slate-400 mb-4">FIRST Tech Challenge (FTC) Robotics</h4>
-                      <ul className="space-y-2 list-disc list-inside text-slate-400 marker:text-slate-600">
+                      <ul className="space-y-2 list-disc list-inside text-slate-400 marker:text-slate-600 mb-4">
                         <li>Engineered 100% of the team's robot code in <strong>Java</strong> using Android Studio, creating complex algorithms for autonomous and tele-operated periods.</li>
                         <li>Spearheaded 400% club growth (5 to 20 students) and established two competitive teams (6373 & 6374).</li>
                         <li>Directed all phases of robot build cycle: <strong>CAD modeling in Onshape</strong>, 3D printing, and soldering.</li>
                         <li>Led team to Finalist Alliance (2023) and won 3rd Place Think and Innovate Award (2024).</li>
                       </ul>
+                      
+                      {/* LINK TO FTC PROJECT */}
+                      <button 
+                        onClick={openFTCProject}
+                        className="inline-flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors border border-blue-900/50 bg-blue-900/20 px-4 py-2 rounded-lg"
+                      >
+                        <Bot size={16} />
+                        See the Engineering & Robot Details
+                        <ChevronRight size={14} />
+                      </button>
                     </div>
                   </div>
                 </div>
-                {/* Job 2 */}
+
+                {/* Job 2 - Peer Tutor */}
                 <div className="relative pl-8 md:pl-0">
                   <div className="hidden md:block absolute left-[147px] top-0 bottom-0 w-px bg-slate-800"></div>
                   <div className="md:flex gap-12 group">
@@ -616,7 +728,8 @@ const Portfolio = () => {
                     </div>
                   </div>
                 </div>
-                {/* Job 3 */}
+
+                {/* Job 3 - High School Peer Tutor */}
                 <div className="relative pl-8 md:pl-0">
                   <div className="hidden md:block absolute left-[147px] top-0 bottom-0 w-px bg-slate-800"></div>
                   <div className="md:flex gap-12 group">
@@ -636,6 +749,38 @@ const Portfolio = () => {
                     </div>
                   </div>
                 </div>
+
+                {/* Job 4 - MESA Machine */}
+                <div className="relative pl-8 md:pl-0">
+                  <div className="hidden md:block absolute left-[147px] top-0 bottom-0 w-px bg-slate-800"></div>
+                  <div className="md:flex gap-12 group">
+                    <div className="md:w-32 md:text-right pt-1">
+                      <span className="text-sm font-bold text-blue-400 block">Sep 2023 - Apr 2024</span>
+                      <span className="text-xs text-slate-500">Menifee, CA</span>
+                    </div>
+                    <div className="hidden md:block absolute left-[142px] top-2 w-3 h-3 rounded-full bg-purple-500 border-4 border-slate-950"></div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-slate-100 group-hover:text-blue-400 transition-colors">Project Lead</h3>
+                      <h4 className="text-lg text-slate-400 mb-4">MESA Machine: Wind-Powered Car</h4>
+                      <ul className="space-y-2 list-disc list-inside text-slate-400 marker:text-slate-600 mb-4">
+                        <li>Engineered a Rube-Goldberg-style machine exclusively from recyclable materials.</li>
+                        <li>Served as the lead troubleshooter during competitions, performing real-time repairs to ensure operation.</li>
+                        <li>Led team to 1st Place in the Southern California Regional MESA Day for 9th/10th grade (Highest division).</li>
+                      </ul>
+
+                      {/* LINK TO MESA PROJECT */}
+                      <button 
+                        onClick={openMESAProject}
+                        className="inline-flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors border border-blue-900/50 bg-blue-900/20 px-4 py-2 rounded-lg"
+                      >
+                        <Wrench size={16} />
+                        See the Engineering Details
+                        <ChevronRight size={14} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
           </FadeInSection>
@@ -643,6 +788,7 @@ const Portfolio = () => {
 
         {/* Projects Section */}
         <section id="projects" className="py-24 px-6 bg-slate-900/30">
+          {/* ... existing code ... */}
           <FadeInSection>
             <div className="max-w-6xl mx-auto">
               <div className="flex items-center gap-3 mb-8">
