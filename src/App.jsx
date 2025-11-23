@@ -24,7 +24,8 @@ import {
   Users,
   TrendingUp,
   Zap,
-  Maximize2
+  Maximize2,
+  FolderOpen
 } from 'lucide-react';
 
 // --- COMPONENTS ---
@@ -347,7 +348,7 @@ const Portfolio = () => {
       tags: ["Python", "Qiskit", "Quantum Computing", "Hackathon"],
       icon: Cpu,
       hasReport: false, 
-      galleryImages: [], // No images for this project
+      galleryImages: [], 
       video: null, 
       youtubeId: null, 
       reportLink: "#"
@@ -362,11 +363,8 @@ const Portfolio = () => {
       icon: Bot, 
       hasReport: false, 
       galleryImages: [
-        { type: 'image', src: "robot2025.png", label: "2025 Robot CAD Model" },
-        { type: 'image', src: "robot2024.jpg", label: "2024 Competition Robot" },
-        { type: 'image', src: "robot2023.jpg", label: "2023 Early Competition Robot" },
-        // Example of how to add a small video to the gallery:
-        { type: 'video', src: "ftc-short-clip.mp4", label: "Autonomous Test" }
+        { type: 'image', src: "ftc-robot-cad.png", label: "Robot CAD Model" },
+        { type: 'image', src: "ftc-robot-photo.jpg", label: "Competition Robot" }
       ],
       video: null,
       youtubeId: null, 
@@ -382,7 +380,7 @@ const Portfolio = () => {
       icon: FileText,
       hasReport: true, 
       galleryImages: [
-        { type: 'image', src: "seaperch.jpg", label: "Submerged ROV" }
+        { type: 'image', src: "seaperch-cad.png", label: "ROV Design" }
       ],
       video: null,
       youtubeId: "XRPzDltYngE", 
@@ -398,7 +396,8 @@ const Portfolio = () => {
       icon: Wrench,
       hasReport: false, 
       galleryImages: [
-        { type: 'video', src: "mesa_machine.mp4", label: "Testing" }
+        { type: 'image', src: "mesa-car-prototype.jpg", label: "Prototype" },
+        { type: 'image', src: "mesa-competition.jpg", label: "Competition Day" }
       ],
       video: null,
       youtubeId: "bjFtC3qG3AQ", 
@@ -406,15 +405,17 @@ const Portfolio = () => {
     }
   ];
 
-  // Helper functions to open specific projects from Experience section
-  const openFTCProject = () => {
-    const project = projects.find(p => p.id === 2);
+  // Helper functions to open specific projects from any section
+  const openProject = (id) => {
+    const project = projects.find(p => p.id === id);
     if (project) setSelectedProject(project);
   };
 
-  const openMESAProject = () => {
-    const project = projects.find(p => p.id === 4);
-    if (project) setSelectedProject(project);
+  const scrollToElement = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   // Scroll logic
@@ -600,10 +601,10 @@ const Portfolio = () => {
                     I am currently a first-year <strong>Computer Engineering</strong> student at <strong>UCLA</strong> with a strong foundation in both software and hardware principles. My academic journey began at Paloma Valley High School where I graduated as Valedictorian with a 4.0 GPA.
                   </p>
                   <p>
-                    My passion lies at the intersection of innovation and engineering. My technical journey has evolved from mechanical fabrication (Wind-Powered Car) to complex electro-mechanical systems (FTC Robotics), and now into the realms of quantum computing and machine learning.
+                    My passion lies at the intersection of innovation and engineering. My technical journey has evolved from mechanical fabrication (<button onClick={() => openProject(4)} className="text-blue-400 hover:underline font-semibold">Wind-Powered Car</button>) to complex electro-mechanical systems (<button onClick={() => openProject(2)} className="text-blue-400 hover:underline font-semibold">FTC Robotics</button>), and now into the realms of quantum computing and machine learning.
                   </p>
                   <p>
-                    Whether I'm programming autonomous path following, analyzing quantum states, or mentoring the next generation of engineers, I am driven by a curiosity to understand how things work and the technical skills to build them better.
+                    Whether I'm <button onClick={() => openProject(2)} className="text-blue-400 hover:underline font-semibold">programming autonomous path following</button>, <button onClick={() => openProject(1)} className="text-blue-400 hover:underline font-semibold">analyzing quantum states</button>, or <button onClick={() => scrollToElement('hs-tutor')} className="text-blue-400 hover:underline font-semibold">mentoring the next generation of engineers</button>, I am driven by a curiosity to understand how things work and the technical skills to build them better.
                   </p>
                 </div>
 
@@ -697,7 +698,7 @@ const Portfolio = () => {
                       
                       {/* LINK TO FTC PROJECT */}
                       <button 
-                        onClick={openFTCProject}
+                        onClick={() => openProject(2)}
                         className="inline-flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors border border-blue-900/50 bg-blue-900/20 px-4 py-2 rounded-lg"
                       >
                         <Bot size={16} />
@@ -720,17 +721,26 @@ const Portfolio = () => {
                     <div className="flex-1">
                       <h3 className="text-xl font-bold text-slate-100 group-hover:text-blue-400 transition-colors">Online Peer Tutor</h3>
                       <h4 className="text-lg text-slate-400 mb-4">Schoolhouse.world (SAT Math)</h4>
-                      <ul className="space-y-2 list-disc list-inside text-slate-400 marker:text-slate-600">
+                      <ul className="space-y-2 list-disc list-inside text-slate-400 marker:text-slate-600 mb-4">
                         <li>Led a 4-week SAT Math Bootcamp for a diverse cohort of 9 students from 4 countries.</li>
                         <li>Designed personalized curricula based on weekly practice quiz data analysis.</li>
                         <li>Fostered a collaborative global learning environment via Zoom.</li>
                       </ul>
+                      <a 
+                        href="https://schoolhouse.world/transcript/ec12e088-925f-4e9e-b32c-639d7e56bf8e" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors border border-blue-900/50 bg-blue-900/20 px-4 py-2 rounded-lg"
+                      >
+                        <ExternalLink size={16} />
+                        View Tutor Transcript
+                      </a>
                     </div>
                   </div>
                 </div>
 
                 {/* Job 3 - High School Peer Tutor */}
-                <div className="relative pl-8 md:pl-0">
+                <div id="hs-tutor" className="relative pl-8 md:pl-0">
                   <div className="hidden md:block absolute left-[147px] top-0 bottom-0 w-px bg-slate-800"></div>
                   <div className="md:flex gap-12 group">
                     <div className="md:w-32 md:text-right pt-1">
@@ -741,11 +751,20 @@ const Portfolio = () => {
                     <div className="flex-1">
                       <h3 className="text-xl font-bold text-slate-100 group-hover:text-blue-400 transition-colors">High School Peer Tutor</h3>
                       <h4 className="text-lg text-slate-400 mb-4">AP Calculus AB</h4>
-                      <ul className="space-y-2 list-disc list-inside text-slate-400 marker:text-slate-600">
+                      <ul className="space-y-2 list-disc list-inside text-slate-400 marker:text-slate-600 mb-4">
                         <li>Mentored 50+ juniors and seniors in complex topics (derivatives, integrals, limits).</li>
                         <li>Analyzed 500+ student quizzes to identify misconceptions and tailor instructional material.</li>
                         <li>Produced comprehensive review videos and worksheets for AP exam preparation.</li>
                       </ul>
+                      <a 
+                        href="https://drive.google.com/drive/folders/0B7CWGSWLUvy0fjZBZjJyNVF3dFY0VWwtdlY0SjM5cndNb0ZZZWVNcDNHZXZRLXZ0WnZQVTg?resourcekey=0-wBGDOgGJ-6i-eh3ph-Pqjw&usp=drive_link" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors border border-blue-900/50 bg-blue-900/20 px-4 py-2 rounded-lg"
+                      >
+                        <FolderOpen size={16} />
+                        View Tutoring Resources
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -770,7 +789,7 @@ const Portfolio = () => {
 
                       {/* LINK TO MESA PROJECT */}
                       <button 
-                        onClick={openMESAProject}
+                        onClick={() => openProject(4)}
                         className="inline-flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors border border-blue-900/50 bg-blue-900/20 px-4 py-2 rounded-lg"
                       >
                         <Wrench size={16} />
@@ -788,7 +807,6 @@ const Portfolio = () => {
 
         {/* Projects Section */}
         <section id="projects" className="py-24 px-6 bg-slate-900/30">
-          {/* ... existing code ... */}
           <FadeInSection>
             <div className="max-w-6xl mx-auto">
               <div className="flex items-center gap-3 mb-8">
