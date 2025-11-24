@@ -184,10 +184,11 @@ const Typewriter = ({ text, speed = 50, className }) => {
   const [displayText, setDisplayText] = useState('');
   
   useEffect(() => {
+    setDisplayText(''); // Reset on text change
     let i = 0;
     const timer = setInterval(() => {
       if (i < text.length) {
-        setDisplayText((prev) => prev + text.charAt(i));
+        setDisplayText((prev) => text.substring(0, i + 1)); // Safer substring method
         i++;
       } else {
         clearInterval(timer);
