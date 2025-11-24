@@ -30,7 +30,8 @@ import {
   ArrowRight,
   Copy,
   Check,
-  ArrowUp
+  ArrowUp,
+  Smile
 } from 'lucide-react';
 
 // --- COMPONENTS ---
@@ -121,10 +122,96 @@ const ParticleBackground = () => {
     };
   }, []);
 
-  return <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full -z-10 opacity-50" />;
+  return <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full -z-10 opacity-50 print:hidden" />;
 };
 
-// 2. Scroll Animation Component
+// 2. Interactive Terminal Component (New)
+const InteractiveTerminal = () => {
+  const [input, setInput] = useState('');
+  const [history, setHistory] = useState([
+    { type: 'output', text: 'Welcome to DarrenOS v1.0.0' },
+    { type: 'output', text: 'Type "help" for available commands.' }
+  ]);
+  const scrollRef = useRef(null);
+
+  const handleCommand = (e) => {
+    if (e.key === 'Enter') {
+      const cmd = input.trim().toLowerCase();
+      const newHistory = [...history, { type: 'input', text: input }];
+      
+      let response = '';
+      switch (cmd) {
+        case 'help':
+          response = 'Available commands: about, skills, contact, clear';
+          break;
+        case 'about':
+          response = 'I am a Computer Engineering student at UCLA focused on Robotics and Quantum Computing.';
+          break;
+        case 'skills':
+          response = 'Core: Java, Python, C++, Onshape, Qiskit, React.';
+          break;
+        case 'contact':
+          response = 'Email: darrenluu2025@gmail.com | LinkedIn: /in/dwluu';
+          break;
+        case 'clear':
+          setHistory([]);
+          setInput('');
+          return;
+        default:
+          response = `Command not found: ${cmd}. Type "help" for list.`;
+      }
+      
+      newHistory.push({ type: 'output', text: response });
+      setHistory(newHistory);
+      setInput('');
+    }
+  };
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [history]);
+
+  return (
+    <div className="bg-slate-950 rounded-xl border border-slate-700 shadow-xl overflow-hidden font-mono mb-6 flex flex-col h-64">
+      <div className="bg-slate-800 px-4 py-2 flex items-center gap-2 border-b border-slate-700 shrink-0">
+        <Terminal size={14} className="text-green-400" />
+        <span className="text-xs text-slate-400">interactive_terminal</span>
+        <div className="flex gap-1.5 ml-auto">
+          <div className="w-2.5 h-2.5 rounded-full bg-red-500/50"></div>
+          <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/50"></div>
+          <div className="w-2.5 h-2.5 rounded-full bg-green-500/50"></div>
+        </div>
+      </div>
+      <div 
+        ref={scrollRef}
+        className="p-4 text-xs md:text-sm space-y-2 overflow-y-auto flex-grow custom-scrollbar"
+      >
+        {history.map((line, i) => (
+          <div key={i} className={`${line.type === 'input' ? 'text-blue-400' : 'text-slate-300'}`}>
+            {line.type === 'input' ? '> ' : ''}{line.text}
+          </div>
+        ))}
+        <div className="flex items-center gap-2 text-purple-400">
+          <span>➜</span>
+          <span className="text-blue-400">~</span>
+          <input 
+            type="text" 
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleCommand}
+            className="bg-transparent border-none outline-none text-slate-200 flex-grow"
+            placeholder="Type command..."
+            autoComplete="off"
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// 3. Scroll Animation Component
 const FadeInSection = ({ children }) => {
   const [isVisible, setVisible] = useState(false);
   const domRef = useRef();
@@ -153,7 +240,7 @@ const FadeInSection = ({ children }) => {
   );
 };
 
-// 3. Scroll Progress Bar Component (New)
+// 4. Scroll Progress Bar
 const ScrollProgress = () => {
   const [scrollWidth, setScrollWidth] = useState(0);
 
@@ -170,7 +257,7 @@ const ScrollProgress = () => {
   }, []);
 
   return (
-    <div className="fixed top-0 left-0 w-full h-1 z-[60]">
+    <div className="fixed top-0 left-0 w-full h-1 z-[60] print:hidden">
       <div 
         className="h-full bg-blue-500 transition-all duration-150 ease-out"
         style={{ width: `${scrollWidth * 100}%` }}
@@ -179,16 +266,16 @@ const ScrollProgress = () => {
   );
 };
 
-// 4. Typewriter Effect Component (New)
+// 5. Typewriter Effect
 const Typewriter = ({ text, speed = 50, className }) => {
   const [displayText, setDisplayText] = useState('');
   
   useEffect(() => {
-    setDisplayText(''); // Reset on text change
+    setDisplayText(''); 
     let i = 0;
     const timer = setInterval(() => {
       if (i < text.length) {
-        setDisplayText((prev) => text.substring(0, i + 1)); // Safer substring method
+        setDisplayText((prev) => text.substring(0, i + 1));
         i++;
       } else {
         clearInterval(timer);
@@ -201,7 +288,7 @@ const Typewriter = ({ text, speed = 50, className }) => {
   return <span className={className}>{displayText}</span>;
 };
 
-// 5. Project Modal Component with Lightbox
+// 6. Project Modal
 const ProjectModal = ({ project, onClose }) => {
   const [lightboxMedia, setLightboxMedia] = useState(null);
 
@@ -209,11 +296,8 @@ const ProjectModal = ({ project, onClose }) => {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
-        if (lightboxMedia) {
-          setLightboxMedia(null);
-        } else {
-          onClose();
-        }
+        if (lightboxMedia) setLightboxMedia(null);
+        else onClose();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -224,7 +308,7 @@ const ProjectModal = ({ project, onClose }) => {
 
   return (
     <>
-      {/* --- LIGHTBOX OVERLAY --- */}
+      {/* Lightbox */}
       {lightboxMedia && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/95 backdrop-blur-md p-4 transition-all animate-in fade-in duration-200" onClick={() => setLightboxMedia(null)}>
           <button 
@@ -236,18 +320,9 @@ const ProjectModal = ({ project, onClose }) => {
           
           <div className="relative max-w-full max-h-full flex flex-col items-center justify-center" onClick={(e) => e.stopPropagation()}>
             {lightboxMedia.type === 'video' ? (
-              <video 
-                src={lightboxMedia.src} 
-                controls 
-                autoPlay 
-                className="max-w-[90vw] max-h-[80vh] rounded-lg border border-slate-700 shadow-2xl" 
-              />
+              <video src={lightboxMedia.src} controls autoPlay className="max-w-[90vw] max-h-[80vh] rounded-lg border border-slate-700 shadow-2xl" />
             ) : (
-              <img 
-                src={lightboxMedia.src} 
-                alt={lightboxMedia.label} 
-                className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg border border-slate-700 shadow-2xl" 
-              />
+              <img src={lightboxMedia.src} alt={lightboxMedia.label} className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg border border-slate-700 shadow-2xl" />
             )}
             <div className="mt-4 px-4 py-2 bg-slate-900/80 rounded-full text-slate-200 text-sm border border-slate-700 backdrop-blur-sm">
               {lightboxMedia.label}
@@ -256,11 +331,9 @@ const ProjectModal = ({ project, onClose }) => {
         </div>
       )}
 
-      {/* --- MAIN MODAL --- */}
+      {/* Modal */}
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm" onClick={onClose}>
         <div className="bg-slate-900 border border-slate-700 w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
-          
-          {/* Header */}
           <div className="p-6 border-b border-slate-700 flex justify-between items-center bg-slate-800/50 shrink-0">
             <div>
               <h3 className="text-2xl font-bold text-slate-100">{project.title}</h3>
@@ -280,9 +353,7 @@ const ProjectModal = ({ project, onClose }) => {
               <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Technologies</h4>
               <div className="flex flex-wrap gap-2">
                 {project.tags.map((tag, i) => (
-                  <span key={i} className="px-3 py-1 bg-slate-800 text-blue-300 rounded-full text-sm border border-slate-700">
-                    {tag}
-                  </span>
+                  <span key={i} className="px-3 py-1 bg-slate-800 text-blue-300 rounded-full text-sm border border-slate-700">{tag}</span>
                 ))}
               </div>
             </div>
@@ -294,22 +365,11 @@ const ProjectModal = ({ project, onClose }) => {
                   {project.youtubeId ? <Youtube size={20} className="text-red-500" /> : <Video size={20} className="text-blue-400" />}
                   <span className="font-semibold text-slate-200">Project Footage</span>
                 </div>
-                
                 <div className="rounded-xl overflow-hidden border border-slate-700 shadow-xl bg-black w-full aspect-video">
                   {project.youtubeId ? (
-                    <iframe 
-                      className="w-full h-full"
-                      src={`https://www.youtube.com/embed/${project.youtubeId}`} 
-                      title="YouTube video player" 
-                      frameBorder="0" 
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                      referrerPolicy="strict-origin-when-cross-origin" 
-                      allowFullScreen
-                    ></iframe>
+                    <iframe className="w-full h-full" src={`https://www.youtube.com/embed/${project.youtubeId}`} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
                   ) : (
-                    <video controls className="w-full h-full" src={project.video}>
-                      Your browser does not support the video tag.
-                    </video>
+                    <video controls className="w-full h-full" src={project.video}>Your browser does not support the video tag.</video>
                   )}
                 </div>
               </div>
@@ -319,32 +379,18 @@ const ProjectModal = ({ project, onClose }) => {
             {(project.hasReport || (project.galleryImages && project.galleryImages.length > 0) || (project.codeLinks && project.codeLinks.length > 0)) && (
               <div className="space-y-4">
                 <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Project Documentation</h4>
-                
                 <div className="grid gap-3">
-                  
-                  {/* --- NEW CODE LINKS --- */}
                   {project.codeLinks && project.codeLinks.map((link, idx) => (
                     <a key={idx} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 bg-slate-800/50 rounded-xl border border-slate-700 hover:border-blue-500 hover:bg-slate-800 transition-all group">
-                      <div className="p-2 bg-blue-900/30 text-blue-400 rounded-lg group-hover:text-white transition-colors">
-                        <Github size={20} />
-                      </div>
-                      <div>
-                        <div className="font-semibold text-slate-200">{link.label}</div>
-                        <div className="text-xs text-slate-500">Source Code</div>
-                      </div>
+                      <div className="p-2 bg-blue-900/30 text-blue-400 rounded-lg group-hover:text-white transition-colors"><Github size={20} /></div>
+                      <div><div className="font-semibold text-slate-200">{link.label}</div><div className="text-xs text-slate-500">Source Code</div></div>
                       <ExternalLink size={16} className="ml-auto text-slate-500 group-hover:text-blue-400" />
                     </a>
                   ))}
-
                   {project.hasReport && (
                     <a href={project.reportLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 bg-slate-800/50 rounded-xl border border-slate-700 hover:border-blue-500 hover:bg-slate-800 transition-all group">
-                      <div className="p-2 bg-blue-900/30 text-blue-400 rounded-lg group-hover:text-white transition-colors">
-                        <FileText size={20} />
-                      </div>
-                      <div>
-                        <div className="font-semibold text-slate-200">Technical Design Report</div>
-                        <div className="text-xs text-slate-500">PDF Documentation</div>
-                      </div>
+                      <div className="p-2 bg-blue-900/30 text-blue-400 rounded-lg group-hover:text-white transition-colors"><FileText size={20} /></div>
+                      <div><div className="font-semibold text-slate-200">Technical Design Report</div><div className="text-xs text-slate-500">PDF Documentation</div></div>
                       <ExternalLink size={16} className="ml-auto text-slate-500 group-hover:text-blue-400" />
                     </a>
                   )}
@@ -358,37 +404,19 @@ const ProjectModal = ({ project, onClose }) => {
                       </div>
                       <div className={`grid gap-3 ${project.galleryImages.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
                           {project.galleryImages.map((media, idx) => (
-                            <div 
-                              key={idx} 
-                              onClick={() => setLightboxMedia(media)}
-                              className="aspect-video bg-slate-900 rounded-lg flex items-center justify-center text-slate-600 border border-slate-800 overflow-hidden relative group cursor-zoom-in hover:border-blue-500/50 transition-all"
-                            >
+                            <div key={idx} onClick={() => setLightboxMedia(media)} className="aspect-video bg-slate-900 rounded-lg flex items-center justify-center text-slate-600 border border-slate-800 overflow-hidden relative group cursor-zoom-in hover:border-blue-500/50 transition-all">
                               {media.type === 'video' ? (
                                 <div className="relative w-full h-full">
-                                  <video 
-                                    src={media.src} 
-                                    className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" 
-                                    muted
-                                  />
+                                  <video src={media.src} className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" muted />
                                   <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-transparent transition-colors">
-                                    <div className="p-2 bg-black/50 rounded-full text-white">
-                                      <Video size={24} />
-                                    </div>
+                                    <div className="p-2 bg-black/50 rounded-full text-white"><Video size={24} /></div>
                                   </div>
                                 </div>
                               ) : (
                                 <>
-                                  <img 
-                                    src={media.src} 
-                                    alt={media.label} 
-                                    className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-500" 
-                                  />
-                                  <div className="absolute top-2 right-2 p-1.5 bg-black/60 rounded-lg text-white opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
-                                    <Maximize2 size={14} />
-                                  </div>
-                                  <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/80 to-transparent text-xs text-center text-white">
-                                    {media.label}
-                                  </div>
+                                  <img src={media.src} alt={media.label} className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-500" />
+                                  <div className="absolute top-2 right-2 p-1.5 bg-black/60 rounded-lg text-white opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm"><Maximize2 size={14} /></div>
+                                  <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/80 to-transparent text-xs text-center text-white">{media.label}</div>
                                 </>
                               )}
                             </div>
@@ -403,9 +431,7 @@ const ProjectModal = ({ project, onClose }) => {
 
           {/* Footer */}
           <div className="p-4 border-t border-slate-700 bg-slate-950/50 flex justify-end shrink-0">
-            <button onClick={onClose} className="px-5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-medium transition-colors">
-              Close
-            </button>
+            <button onClick={onClose} className="px-5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-medium transition-colors">Close</button>
           </div>
         </div>
       </div>
@@ -537,12 +563,18 @@ const Portfolio = () => {
       const sections = ['home', 'about', 'experience', 'projects', 'education', 'skills', 'awards'];
       const scrollPosition = window.scrollY + 100;
       
-      // Active section logic
+      // Dynamic Title
+      let current = '';
       for (const section of sections) {
         const element = document.getElementById(section);
         if (element && element.offsetTop <= scrollPosition && (element.offsetTop + element.offsetHeight) > scrollPosition) {
           setActiveSection(section);
+          current = section.charAt(0).toUpperCase() + section.slice(1);
         }
+      }
+      
+      if (current) {
+        document.title = `Darren Luu | ${current}`;
       }
 
       // Back to top logic
@@ -587,20 +619,25 @@ const Portfolio = () => {
   );
 
   return (
-    <div className="bg-slate-950 min-h-screen text-slate-300 font-sans selection:bg-blue-500/30 selection:text-blue-200 relative">
+    <div className="bg-slate-950 min-h-screen text-slate-300 font-sans selection:bg-blue-500/30 selection:text-blue-200 relative print:bg-white print:text-black">
       
       {/* 1. Scroll Progress Bar */}
       <ScrollProgress />
 
       {/* 2. Interactive Background */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
+      <div className="fixed inset-0 z-0 pointer-events-none print:hidden">
         <ParticleBackground />
       </div>
+
+      {/* Accessibility Skip Link */}
+      <a href="#home" className="fixed top-4 left-4 z-[100] -translate-y-20 focus:translate-y-0 bg-blue-600 text-white px-4 py-2 rounded shadow-lg transition-transform">
+        Skip to Content
+      </a>
 
       {/* Back To Top Button */}
       <button 
         onClick={scrollToTop}
-        className={`fixed bottom-8 right-8 p-3 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-500 transition-all duration-300 z-40 ${showBackToTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}
+        className={`fixed bottom-8 right-8 p-3 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-500 transition-all duration-300 z-40 print:hidden ${showBackToTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}
       >
         <ArrowUp size={20} />
       </button>
@@ -611,7 +648,7 @@ const Portfolio = () => {
       )}
       
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 bg-slate-950/70 backdrop-blur-lg border-b border-slate-800 z-50 h-16 transition-all">
+      <nav className="fixed top-0 left-0 right-0 bg-slate-950/70 backdrop-blur-lg border-b border-slate-800 z-50 h-16 transition-all print:hidden">
         <div className="max-w-6xl mx-auto px-6 h-full flex justify-between items-center">
           <div className="text-xl font-bold text-slate-100 tracking-tight flex items-center gap-2">
             <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-slate-800 rounded flex items-center justify-center text-white font-bold">DL</div>
@@ -665,7 +702,7 @@ const Portfolio = () => {
                 Passionate about robotics, quantum computing, and software engineering.
               </p>
               
-              <div className="flex flex-wrap justify-center gap-4">
+              <div className="flex flex-wrap justify-center gap-4 print:hidden">
                 <a href="mailto:darrenluu2025@gmail.com" className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-500 transition-all hover:-translate-y-0.5 shadow-lg shadow-blue-900/20">
                   <Mail size={18} /> Contact Me
                 </a>
@@ -686,7 +723,7 @@ const Portfolio = () => {
         </section>
 
         {/* --- STATS BAR --- */}
-        <section className="py-10 border-y border-slate-800 bg-slate-900/30">
+        <section className="py-10 border-y border-slate-800 bg-slate-900/30 print:hidden">
           <FadeInSection>
             <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
               <div className="space-y-1">
@@ -733,66 +770,56 @@ const Portfolio = () => {
                     I am currently a first-year <strong>Computer Engineering</strong> student at <strong>UCLA</strong> with a strong foundation in both software and hardware principles. My academic journey began at Paloma Valley High School where I graduated as Valedictorian with a 4.0 GPA.
                   </p>
                   <p>
-                    My passion lies at the intersection of innovation and engineering. My technical journey has evolved from mechanical fabrication (<button onClick={() => openProject(4)} className="text-blue-400 hover:underline font-semibold">Wind-Powered Car</button>) to complex electro-mechanical systems (<button onClick={() => openProject(2)} className="text-blue-400 hover:underline font-semibold">FTC Robotics</button>), and now into the realms of quantum computing and machine learning.
+                    My passion lies at the intersection of innovation and engineering. My technical journey has evolved from mechanical fabrication (<button onClick={() => openProject(4)} className="text-blue-400 hover:underline font-semibold print:text-black print:no-underline">Wind-Powered Car</button>) to complex electro-mechanical systems (<button onClick={() => openProject(2)} className="text-blue-400 hover:underline font-semibold print:text-black print:no-underline">FTC Robotics</button>), and now into the realms of quantum computing and machine learning.
                   </p>
                   <p>
-                    Whether I'm <button onClick={() => openProject(2)} className="text-blue-400 hover:underline font-semibold">programming autonomous path following</button>, <button onClick={() => openProject(1)} className="text-blue-400 hover:underline font-semibold">analyzing quantum states</button>, or <button onClick={() => scrollToElement('hs-tutor')} className="text-blue-400 hover:underline font-semibold">mentoring the next generation of engineers</button>, I am driven by a curiosity to understand how things work and the technical skills to build them better.
+                    Whether I'm <button onClick={() => openProject(2)} className="text-blue-400 hover:underline font-semibold print:text-black print:no-underline">programming autonomous path following</button>, <button onClick={() => openProject(1)} className="text-blue-400 hover:underline font-semibold print:text-black print:no-underline">analyzing quantum states</button>, or <button onClick={() => scrollToElement('hs-tutor')} className="text-blue-400 hover:underline font-semibold print:text-black print:no-underline">mentoring the next generation of engineers</button>, I am driven by a curiosity to understand how things work and the technical skills to build them better.
                   </p>
                 </div>
 
                 <div className="space-y-6">
                   {/* Quick Info Card */}
-                  <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl">
-                    <h3 className="text-white font-semibold mb-4 border-b border-slate-700 pb-2">Quick Info</h3>
+                  <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl print:border-gray-300 print:bg-white print:text-black">
+                    <h3 className="text-white font-semibold mb-4 border-b border-slate-700 pb-2 print:text-black print:border-gray-300">Quick Info</h3>
                     <ul className="space-y-3 text-sm">
                       <li className="flex items-start gap-3">
-                        <MapPin size={16} className="text-blue-400 mt-1" />
+                        <MapPin size={16} className="text-blue-400 mt-1 print:text-black" />
                         <span>Los Angeles, CA 90024</span>
                       </li>
                       <li className="flex items-start gap-3">
-                        <Mail size={16} className="text-blue-400 mt-1" />
+                        <Mail size={16} className="text-blue-400 mt-1 print:text-black" />
                         <span className="break-all">darrenluu2025@gmail.com</span>
                       </li>
                       <li className="flex items-start gap-3">
-                        <BookOpen size={16} className="text-blue-400 mt-1" />
+                        <BookOpen size={16} className="text-blue-400 mt-1 print:text-black" />
                         <span>4.0 GPA @ UCLA</span>
                       </li>
                     </ul>
                   </div>
 
-                  {/* CURRENTLY LEARNING - TERMINAL STYLE */}
-                  <div className="bg-slate-950 rounded-xl border border-slate-700 shadow-xl overflow-hidden font-mono">
-                    <div className="bg-slate-800 px-4 py-2 flex items-center gap-2 border-b border-slate-700">
-                      <Terminal size={14} className="text-green-400" />
-                      <span className="text-xs text-slate-400">status.log</span>
-                      <div className="flex gap-1.5 ml-auto">
-                        <div className="w-2.5 h-2.5 rounded-full bg-red-500/50"></div>
-                        <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/50"></div>
-                        <div className="w-2.5 h-2.5 rounded-full bg-green-500/50"></div>
-                      </div>
-                    </div>
-                    <div className="p-4 text-xs md:text-sm space-y-3">
-                      <div>
-                        <span className="text-purple-400">➜</span> <span className="text-blue-400">~</span> <span className="text-slate-200">current_focus</span>
-                        <div className="text-slate-400 mt-1 pl-4">
-                          "Computer Vision & Machine Learning"
-                        </div>
-                      </div>
-                      <div>
-                        <span className="text-purple-400">➜</span> <span className="text-blue-400">~</span> <span className="text-slate-200">active_project</span>
-                        <div className="text-slate-400 mt-1 pl-4">
-                          <a href="https://github.com/libozaza/donkeyracers" target="_blank" rel="noopener noreferrer" className="text-yellow-300 hover:underline">IEEE Donkey Racers</a> @ UCLA
-                        </div>
-                        <div className="text-slate-500 mt-1 pl-4 italic flex items-center gap-2">
-                          Building an autonomous driving car using Python & Git.
-                          <span className="text-yellow-500 text-[10px] border border-yellow-500/30 bg-yellow-500/10 px-1.5 py-0.5 rounded">Early Stages</span>
-                        </div>
-                      </div>
-                      <div className="animate-pulse">
-                        <span className="text-purple-400">➜</span> <span className="text-slate-200">_</span>
-                      </div>
-                    </div>
+                  {/* INTERACTIVE TERMINAL */}
+                  <div className="print:hidden">
+                     <InteractiveTerminal />
                   </div>
+
+                  {/* PERSONAL INTERESTS CARD */}
+                  <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl print:hidden">
+                    <div className="flex items-center gap-2 mb-4 border-b border-slate-700 pb-2">
+                      <Smile className="text-yellow-400" size={20} />
+                      <h3 className="text-white font-semibold">Personal Interests</h3>
+                    </div>
+                    <ul className="space-y-2 text-sm text-slate-400">
+                      <li className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 bg-purple-400 rounded-full"></div>
+                        <span>Solving Rubik's Cubes</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 bg-blue-400 rounded-full"></div>
+                        <span>Reading Manga & Watching Anime</span>
+                      </li>
+                    </ul>
+                  </div>
+
                 </div>
               </div>
             </div>
@@ -812,13 +839,16 @@ const Portfolio = () => {
               <div className="space-y-12">
                 {/* Job 1 - FTC */}
                 <div className="relative pl-8 md:pl-0">
-                  <div className="hidden md:block absolute left-[147px] top-0 bottom-0 w-px bg-slate-800"></div>
+                   {/* Visual Timeline Line */}
+                  <div className="hidden md:block absolute left-[147px] top-0 bottom-0 w-px bg-slate-800 print:hidden"></div>
+                  {/* Timeline Dot */}
+                  <div className="hidden md:block absolute left-[142px] top-2 w-3 h-3 rounded-full bg-blue-500 border-4 border-slate-950 print:hidden"></div>
+                  
                   <div className="md:flex gap-12 group">
-                    <div className="md:w-32 md:text-right pt-1">
+                    <div className="md:w-32 md:text-right pt-1 shrink-0">
                       <span className="text-sm font-bold text-blue-400 block">Aug 2022 - May 2025</span>
                       <span className="text-xs text-slate-500">Menifee, CA</span>
                     </div>
-                    <div className="hidden md:block absolute left-[142px] top-2 w-3 h-3 rounded-full bg-blue-500 border-4 border-slate-950"></div>
                     <div className="flex-1">
                       <h3 className="text-xl font-bold text-slate-100 group-hover:text-blue-400 transition-colors">Club President & Lead Programmer</h3>
                       <h4 className="text-lg text-slate-400 mb-4">FIRST Tech Challenge (FTC) Robotics</h4>
@@ -832,7 +862,7 @@ const Portfolio = () => {
                       {/* LINK TO FTC PROJECT */}
                       <button 
                         onClick={() => openProject(2)}
-                        className="inline-flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors border border-blue-900/50 bg-blue-900/20 px-4 py-2 rounded-lg"
+                        className="inline-flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors border border-blue-900/50 bg-blue-900/20 px-4 py-2 rounded-lg print:hidden"
                       >
                         <Bot size={16} />
                         See the Engineering & Robot Details
@@ -844,13 +874,14 @@ const Portfolio = () => {
 
                 {/* Job 2 - Peer Tutor */}
                 <div className="relative pl-8 md:pl-0">
-                  <div className="hidden md:block absolute left-[147px] top-0 bottom-0 w-px bg-slate-800"></div>
+                  <div className="hidden md:block absolute left-[147px] top-0 bottom-0 w-px bg-slate-800 print:hidden"></div>
+                   <div className="hidden md:block absolute left-[142px] top-2 w-3 h-3 rounded-full bg-slate-700 border-4 border-slate-950 print:hidden"></div>
+
                   <div className="md:flex gap-12 group">
-                    <div className="md:w-32 md:text-right pt-1">
+                    <div className="md:w-32 md:text-right pt-1 shrink-0">
                       <span className="text-sm font-bold text-blue-400 block">Feb 2024 - Mar 2024</span>
                       <span className="text-xs text-slate-500">Remote</span>
                     </div>
-                    <div className="hidden md:block absolute left-[142px] top-2 w-3 h-3 rounded-full bg-slate-700 border-4 border-slate-950"></div>
                     <div className="flex-1">
                       <h3 className="text-xl font-bold text-slate-100 group-hover:text-blue-400 transition-colors">Online Peer Tutor</h3>
                       <h4 className="text-lg text-slate-400 mb-4">Schoolhouse.world (SAT Math)</h4>
@@ -863,7 +894,7 @@ const Portfolio = () => {
                         href="https://schoolhouse.world/transcript/ec12e088-925f-4e9e-b32c-639d7e56bf8e" 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors border border-blue-900/50 bg-blue-900/20 px-4 py-2 rounded-lg"
+                        className="inline-flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors border border-blue-900/50 bg-blue-900/20 px-4 py-2 rounded-lg print:hidden"
                       >
                         <ExternalLink size={16} />
                         View Tutor Transcript
@@ -874,13 +905,14 @@ const Portfolio = () => {
 
                 {/* Job 3 - High School Peer Tutor */}
                 <div id="hs-tutor" className="relative pl-8 md:pl-0">
-                  <div className="hidden md:block absolute left-[147px] top-0 bottom-0 w-px bg-slate-800"></div>
+                  <div className="hidden md:block absolute left-[147px] top-0 bottom-0 w-px bg-slate-800 print:hidden"></div>
+                  <div className="hidden md:block absolute left-[142px] top-2 w-3 h-3 rounded-full bg-slate-700 border-4 border-slate-950 print:hidden"></div>
+
                   <div className="md:flex gap-12 group">
-                    <div className="md:w-32 md:text-right pt-1">
+                    <div className="md:w-32 md:text-right pt-1 shrink-0">
                       <span className="text-sm font-bold text-blue-400 block">Aug 2023 - Jun 2024</span>
                       <span className="text-xs text-slate-500">Menifee, CA</span>
                     </div>
-                    <div className="hidden md:block absolute left-[142px] top-2 w-3 h-3 rounded-full bg-slate-700 border-4 border-slate-950"></div>
                     <div className="flex-1">
                       <h3 className="text-xl font-bold text-slate-100 group-hover:text-blue-400 transition-colors">High School Peer Tutor</h3>
                       <h4 className="text-lg text-slate-400 mb-4">AP Calculus AB</h4>
@@ -893,7 +925,7 @@ const Portfolio = () => {
                         href="https://drive.google.com/drive/folders/0B7CWGSWLUvy0fjZBZjJyNVF3dFY0VWwtdlY0SjM5cndNb0ZZZWVNcDNHZXZRLXZ0WnZQVTg?resourcekey=0-wBGDOgGJ-6i-eh3ph-Pqjw&usp=drive_link" 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors border border-blue-900/50 bg-blue-900/20 px-4 py-2 rounded-lg"
+                        className="inline-flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors border border-blue-900/50 bg-blue-900/20 px-4 py-2 rounded-lg print:hidden"
                       >
                         <FolderOpen size={16} />
                         View Tutoring Resources
@@ -904,13 +936,14 @@ const Portfolio = () => {
 
                 {/* Job 4 - MESA Machine */}
                 <div className="relative pl-8 md:pl-0">
-                  <div className="hidden md:block absolute left-[147px] top-0 bottom-0 w-px bg-slate-800"></div>
+                  <div className="hidden md:block absolute left-[147px] top-0 bottom-0 w-px bg-slate-800 print:hidden"></div>
+                  <div className="hidden md:block absolute left-[142px] top-2 w-3 h-3 rounded-full bg-purple-500 border-4 border-slate-950 print:hidden"></div>
+
                   <div className="md:flex gap-12 group">
-                    <div className="md:w-32 md:text-right pt-1">
+                    <div className="md:w-32 md:text-right pt-1 shrink-0">
                       <span className="text-sm font-bold text-blue-400 block">Sep 2023 - Apr 2024</span>
                       <span className="text-xs text-slate-500">Menifee, CA</span>
                     </div>
-                    <div className="hidden md:block absolute left-[142px] top-2 w-3 h-3 rounded-full bg-purple-500 border-4 border-slate-950"></div>
                     <div className="flex-1">
                       <h3 className="text-xl font-bold text-slate-100 group-hover:text-blue-400 transition-colors">Project Lead</h3>
                       <h4 className="text-lg text-slate-400 mb-4">MESA Machine: Wind-Powered Car</h4>
@@ -923,7 +956,7 @@ const Portfolio = () => {
                       {/* LINK TO MESA PROJECT */}
                       <button 
                         onClick={() => openProject(4)}
-                        className="inline-flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors border border-blue-900/50 bg-blue-900/20 px-4 py-2 rounded-lg"
+                        className="inline-flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors border border-blue-900/50 bg-blue-900/20 px-4 py-2 rounded-lg print:hidden"
                       >
                         <Wrench size={16} />
                         See the Engineering Details
@@ -948,7 +981,7 @@ const Portfolio = () => {
                   <h2 className="text-3xl font-bold text-slate-100">Projects</h2>
                 </div>
                 {/* Category Filter */}
-                <div className="flex gap-2 p-1 bg-slate-900/50 rounded-lg border border-slate-800">
+                <div className="flex gap-2 p-1 bg-slate-900/50 rounded-lg border border-slate-800 print:hidden">
                   {categories.map(cat => (
                     <button
                       key={cat}
@@ -971,7 +1004,7 @@ const Portfolio = () => {
                   <div 
                     key={project.id}
                     onClick={() => setSelectedProject(project)}
-                    className="bg-slate-800 rounded-xl overflow-hidden border border-slate-700 hover:border-blue-500/50 transition-all group hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-900/10 flex flex-col cursor-pointer"
+                    className="bg-slate-800 rounded-xl overflow-hidden border border-slate-700 hover:border-blue-500/50 transition-all group hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-900/10 flex flex-col cursor-pointer print:break-inside-avoid"
                   >
                     <div className="p-6 flex flex-col h-full">
                       <div className="flex justify-between items-start mb-4">
