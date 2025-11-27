@@ -486,7 +486,7 @@ const Portfolio = () => {
       category: "Robotics",
       date: "Aug 2022 - May 2025",
       shortDesc: "Lead Programmer & Club President. Engineered autonomous robot control systems.",
-      fullDescription: "As Club President and Lead Programmer for Teams 6373 & 6374, I engineered 100% of the robot's codebase in Java using Android Studio. I developed complex autonomous algorithms using computer vision and PID control loops to ensure precise movement. Additionally, I directed the complete robot build cycle, from CAD modeling in Onshape to 3D printing custom components and soldering electronics. My leadership resulted in 400% club growth and recognition as a Finalist Alliance (2023).",
+      fullDescription: "As Club President and Lead Programmer for Teams 6373 & 6374, I engineered 100% of the robot's codebase in Java using Android Studio. I utilized complex autonomous algorithms using computer vision and PID control loops to ensure precise movement. Additionally, I directed the complete robot build cycle, from CAD modeling in Onshape to 3D printing custom components and soldering electronics. My leadership resulted in 400% club growth and recognition as a Finalist Alliance (2023).",
       tags: ["Java", "Android Studio", "Onshape CAD", "PID Control", "Robotics"],
       icon: Bot, 
       hasReport: false,
@@ -499,7 +499,7 @@ const Portfolio = () => {
         { type: 'image', src: "robot2024.jpg", label: "2024 Competition Robot" },
         { type: 'image', src: "robot2023.jpg", label: "2023 Early Competition Robot" },
         // Example of how to add a small video to the gallery:
-        { type: 'video', src: "ftc-short-clip.mp4", label: "Autonomous Test" }
+        { type: 'video', src: "ftc-short-clip.mp4", label: "2024 Autonomous Test" }
       ],
       video: null,
       youtubeId: null, 
@@ -510,8 +510,8 @@ const Portfolio = () => {
       title: "Seaperch: Underwater ROV",
       category: "Robotics",
       date: "Mar 2025",
-      shortDesc: "Authored a comprehensive Technical Design Report for an underwater robot.",
-      fullDescription: "Authored and edited a comprehensive Technical Design Report for the Seaperch Underwater ROV competition. This involved translating the team's entire engineering design process into professional documentation, creating data visualizations in Google Sheets to justify design choices, and ensuring technical accuracy. Resulted in a 5th place finish in the Technical Design category.",
+      shortDesc: "Co-authored a comprehensive Technical Design Report for an underwater robot.",
+      fullDescription: "Co-authored and edited a comprehensive Technical Design Report for the Seaperch Underwater ROV competition. This involved translating the team's entire engineering design process into professional documentation, creating data visualizations in Google Sheets to justify design choices, and ensuring technical accuracy. Resulted in a 5th place finish in the Technical Design category.",
       tags: ["Technical Writing", "Data Visualization", "Robotics", "Google Sheets"],
       icon: FileText,
       hasReport: true, 
@@ -519,7 +519,7 @@ const Portfolio = () => {
         { type: 'image', src: "seaperch.jpg", label: "Submerged ROV" }
       ],
       video: null,
-      youtubeId: "XRPzDltYngE", 
+      youtubeId: null, 
       reportLink: "technical_design_report.pdf" 
     },
     {
