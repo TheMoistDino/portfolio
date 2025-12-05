@@ -758,12 +758,6 @@ const Portfolio = () => {
             <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
               <div className="space-y-1">
                 <div className="text-3xl font-bold text-white flex items-center justify-center gap-2">
-                  <Award className="text-yellow-500" size={24} /> 4.0
-                </div>
-                <div className="text-sm text-slate-400 uppercase tracking-wide">UCLA GPA</div>
-              </div>
-              <div className="space-y-1">
-                <div className="text-3xl font-bold text-white flex items-center justify-center gap-2">
                   <TrendingUp className="text-green-400" size={24} /> 400%
                 </div>
                 <div className="text-sm text-slate-400 uppercase tracking-wide">Club Growth</div>
@@ -797,7 +791,7 @@ const Portfolio = () => {
               <div className="grid lg:grid-cols-3 gap-12 items-start">
                 <div className="lg:col-span-2 space-y-6 text-lg leading-relaxed text-slate-300">
                   <p>
-                    I am currently a first-year <strong>Computer Engineering</strong> student at <strong>UCLA</strong> with a strong foundation in both software and hardware principles. My academic journey began at Paloma Valley High School where I graduated as Valedictorian with a 4.0 GPA.
+                    I am currently a first-year <strong>Computer Engineering</strong> student at <strong>UCLA</strong> with a strong foundation in both software and hardware principles. My academic journey began at Paloma Valley High School where I graduated as Valedictorian.
                   </p>
                   <p>
                     My passion lies at the intersection of innovation and engineering. My technical journey has evolved from mechanical fabrication (<button onClick={() => openProject(4)} className="text-blue-400 hover:underline font-semibold print:text-black print:no-underline">Wind-Powered Car</button>) to complex electro-mechanical systems (<button onClick={() => openProject(2)} className="text-blue-400 hover:underline font-semibold print:text-black print:no-underline">FTC Robotics</button>), and now into the realms of quantum computing and machine learning.
@@ -819,10 +813,6 @@ const Portfolio = () => {
                       <li className="flex items-start gap-3">
                         <Mail size={16} className="text-blue-400 mt-1 print:text-black" />
                         <span className="break-all">darrenluu2025@gmail.com</span>
-                      </li>
-                      <li className="flex items-start gap-3">
-                        <BookOpen size={16} className="text-blue-400 mt-1 print:text-black" />
-                        <span>4.0 GPA @ UCLA</span>
                       </li>
                     </ul>
                   </div>
@@ -1114,7 +1104,7 @@ const Portfolio = () => {
                   <div className="bg-slate-800/30 border border-slate-700 rounded-xl p-6 hover:bg-slate-800/50 transition-colors">
                     <h3 className="text-lg font-bold text-slate-100 mb-1">Paloma Valley High School</h3>
                     <p className="text-blue-400 text-sm mb-2">High School Diploma | Aug 2021 - Jun 2025</p>
-                    <p className="text-slate-400 text-sm mb-4">GPA: 4.0 | Valedictorian</p>
+                    <p className="text-slate-400 text-sm mb-4">GPA: 4.5 | Valedictorian</p>
                     <div className="text-xs text-slate-500 space-y-1">
                       <p>• AP Physics C: Mechanics (5)</p>
                       <p>• AP Calculus AB & BC (5)</p>
