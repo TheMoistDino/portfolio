@@ -42,7 +42,9 @@ const ParticleBackground = () => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
+    if (!canvas) return; // guard for SSR or unexpected null ref
+    const ctx = canvas.getContext && canvas.getContext('2d');
+    if (!ctx) return;
     let animationFrameId;
     let particles = [];
 
@@ -95,7 +97,8 @@ const ParticleBackground = () => {
         particle.draw();
 
         // Connect particles
-        for (let j = index; j < particles.length; j++) {
+        // start at index+1 to avoid self-connection and duplicate lines
+        for (let j = index + 1; j < particles.length; j++) {
           const dx = particles[j].x - particle.x;
           const dy = particles[j].y - particle.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
@@ -137,7 +140,7 @@ const InteractiveTerminal = () => {
          <span className="text-purple-400">➜</span> <span className="font-bold text-slate-200">Current Focus:</span> Computer Vision & Machine Learning
        </div>
        <div className="text-slate-300 mt-1">
-         <span className="text-purple-400">➜</span> <span className="font-bold text-slate-200">Active Project:</span> <a href="https://github.com/libozaza/donkeyracers" target="_blank" rel="noreferrer" className="text-yellow-400 hover:underline">IEEE Donkey Racers</a>
+         <span className="text-purple-400">➜</span> <span className="font-bold text-slate-200">Active Project:</span> <a href="https://github.com/libozaza/donkeyracers" target="_blank" rel="noopener noreferrer" className="text-yellow-400 hover:underline">IEEE Donkey Racers</a>
          <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">Early Stages</span>
        </div>
     </div>
@@ -155,8 +158,13 @@ const InteractiveTerminal = () => {
   const handleCommand = (e) => {
     if (e.key === 'Enter') {
       const cmd = input.trim().toLowerCase();
+      // ignore empty submissions
+      if (!cmd) {
+        setInput('');
+        return;
+      }
       const newHistory = [...history, { type: 'input', text: input }];
-      
+
       let response = '';
       let content = null;
 
@@ -225,6 +233,7 @@ const InteractiveTerminal = () => {
           <span className="text-blue-400">~</span>
           <input 
             type="text" 
+            aria-label="Terminal input"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleCommand}
@@ -275,8 +284,9 @@ const ScrollProgress = () => {
     const handleScroll = () => {
       const totalScroll = document.documentElement.scrollTop;
       const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      const scroll = `${totalScroll / windowHeight}`;
-      setScrollWidth(Number(scroll));
+      // guard against division by zero on very short pages
+      const scroll = windowHeight > 0 ? totalScroll / windowHeight : 0;
+      setScrollWidth(scroll);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -420,7 +430,15 @@ const ProjectModal = ({ project, onClose }) => {
                       </div>
                       <div className={`grid gap-3 ${project.galleryImages.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
                           {project.galleryImages.map((media, idx) => (
-                            <div key={idx} onClick={() => setLightboxMedia(media)} className="aspect-video bg-slate-900 rounded-lg flex items-center justify-center text-slate-600 border border-slate-800 overflow-hidden relative group cursor-zoom-in hover:border-blue-500/50 transition-all">
+                            <div
+                              key={idx}
+                              onClick={() => setLightboxMedia(media)}
+                              tabIndex={0}
+                              role="button"
+                              aria-label={`Open ${media.label} in lightbox`}
+                              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { setLightboxMedia(media); e.preventDefault(); } }}
+                              className="aspect-video bg-slate-900 rounded-lg flex items-center justify-center text-slate-600 border border-slate-800 overflow-hidden relative group cursor-zoom-in hover:border-blue-500/50 transition-all"
+                            >
                               {media.type === 'video' ? (
                                 <div className="relative w-full h-full">
                                   <video src={media.src} className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" muted />
@@ -741,10 +759,10 @@ const Portfolio = () => {
                   <Download size={18} /> Resume
                 </a>
 
-                <a href="https://github.com/TheMoistDino" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-6 py-3 bg-slate-800 text-slate-200 rounded-lg font-medium hover:bg-slate-700 border border-slate-700 transition-all hover:-translate-y-0.5">
+                <a href="https://github.com/TheMoistDino" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-6 py-3 bg-slate-800 text-slate-200 rounded-lg font-medium hover:bg-slate-700 border border-slate-700 transition-all hover:-translate-y-0.5">
                   <Github size={18} /> GitHub
                 </a>
-                <a href="https://www.linkedin.com/in/dwluu/" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-6 py-3 bg-slate-800 text-slate-200 rounded-lg font-medium hover:bg-slate-700 border border-slate-700 transition-all hover:-translate-y-0.5">
+                <a href="https://www.linkedin.com/in/dwluu/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-6 py-3 bg-slate-800 text-slate-200 rounded-lg font-medium hover:bg-slate-700 border border-slate-700 transition-all hover:-translate-y-0.5">
                   <Linkedin size={18} /> LinkedIn
                 </a>
               </div>
@@ -755,7 +773,7 @@ const Portfolio = () => {
         {/* --- STATS BAR --- */}
         <section className="py-10 border-y border-slate-800 bg-slate-900/30 print:hidden">
           <FadeInSection>
-            <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-3 gap-8 text-center">
               <div className="space-y-1">
                 <div className="text-3xl font-bold text-white flex items-center justify-center gap-2">
                   <TrendingUp className="text-green-400" size={24} /> 400%
@@ -1024,6 +1042,10 @@ const Portfolio = () => {
                   <div 
                     key={project.id}
                     onClick={() => setSelectedProject(project)}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`Open project ${project.title} details`}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { setSelectedProject(project); e.preventDefault(); } }}
                     className="bg-slate-800 rounded-xl overflow-hidden border border-slate-700 hover:border-blue-500/50 transition-all group hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-900/10 flex flex-col cursor-pointer print:break-inside-avoid"
                   >
                     <div className="p-6 flex flex-col h-full">
@@ -1294,8 +1316,8 @@ const Portfolio = () => {
           </div>
           <div className="flex gap-6">
             <a href="mailto:darrenluu2025@gmail.com" className="hover:text-blue-400 transition-colors">Email</a>
-            <a href="https://github.com/TheMoistDino" target="_blank" rel="noreferrer" className="hover:text-blue-400 transition-colors">GitHub</a>
-            <a href="https://www.linkedin.com/in/dwluu/" target="_blank" rel="noreferrer" className="hover:text-blue-400 transition-colors">LinkedIn</a>
+            <a href="https://github.com/TheMoistDino" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">GitHub</a>
+            <a href="https://www.linkedin.com/in/dwluu/" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">LinkedIn</a>
           </div>
         </div>
       </footer>
