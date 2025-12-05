@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { 
   Mail, 
   Linkedin, 
@@ -36,216 +36,11 @@ import {
 
 // --- COMPONENTS ---
 
-// 1. Particle Background Component (Canvas)
-const ParticleBackground = () => {
-  const canvasRef = useRef(null);
+// 1. Particle Background Component (code-split)
+const ParticleBackground = lazy(() => import('./components/ParticleBackground'));
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return; // guard for SSR or unexpected null ref
-    const ctx = canvas.getContext && canvas.getContext('2d');
-    if (!ctx) return;
-    let animationFrameId;
-    let particles = [];
-
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-
-    class Particle {
-      constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.vx = (Math.random() - 0.5) * 0.5;
-        this.vy = (Math.random() - 0.5) * 0.5;
-        this.size = Math.random() * 2 + 1;
-      }
-
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-
-        if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-        if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-      }
-
-      draw() {
-        ctx.fillStyle = 'rgba(96, 165, 250, 0.2)'; // Blue-400 with low opacity
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    const init = () => {
-      particles = [];
-      const particleCount = Math.min(window.innerWidth / 10, 100);
-      for (let i = 0; i < particleCount; i++) {
-        particles.push(new Particle());
-      }
-    };
-
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      particles.forEach((particle, index) => {
-        particle.update();
-        particle.draw();
-
-        // Connect particles
-        // start at index+1 to avoid self-connection and duplicate lines
-        for (let j = index + 1; j < particles.length; j++) {
-          const dx = particles[j].x - particle.x;
-          const dy = particles[j].y - particle.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-
-          if (distance < 150) {
-            ctx.beginPath();
-            ctx.strokeStyle = `rgba(96, 165, 250, ${0.1 - distance / 1500})`;
-            ctx.lineWidth = 1;
-            ctx.moveTo(particle.x, particle.y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.stroke();
-          }
-        }
-      });
-      animationFrameId = requestAnimationFrame(animate);
-    };
-
-    init();
-    animate();
-
-    return () => {
-      window.removeEventListener('resize', resizeCanvas);
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, []);
-
-  return <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full -z-10 opacity-50 print:hidden" />;
-};
-
-// 2. Interactive Terminal Component (Updated with Donkey Racers)
-const InteractiveTerminal = () => {
-  const [input, setInput] = useState('');
-
-  // Define the Status Log content as a reusable variable
-  const statusLogContent = (
-    <div className="my-2 p-3 bg-slate-900/50 rounded border border-slate-800 border-l-2 border-l-yellow-500">
-       <div className="text-slate-400 text-xs uppercase tracking-wider mb-1">Status Log</div>
-       <div className="text-slate-300">
-         <span className="text-purple-400">➜</span> <span className="font-bold text-slate-200">Current Focus:</span> Computer Vision & Machine Learning
-       </div>
-       <div className="text-slate-300 mt-1">
-         <span className="text-purple-400">➜</span> <span className="font-bold text-slate-200">Active Project:</span> <a href="https://github.com/libozaza/donkeyracers" target="_blank" rel="noopener noreferrer" className="text-yellow-400 hover:underline">IEEE Donkey Racers</a>
-         <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">Early Stages</span>
-       </div>
-    </div>
-  );
-
-  // Initialize history with the Active Project info so it's visible immediately
-  const [history, setHistory] = useState([
-    { type: 'output', text: 'Welcome to DarrenOS v1.0.0' },
-    { type: 'output', text: 'Loading current profile configuration...' },
-    { type: 'output', content: statusLogContent },
-    { type: 'output', text: 'Type "help" for available commands.' }
-  ]);
-  const scrollRef = useRef(null);
-
-  const handleCommand = (e) => {
-    if (e.key === 'Enter') {
-      const cmd = input.trim().toLowerCase();
-      // ignore empty submissions
-      if (!cmd) {
-        setInput('');
-        return;
-      }
-      const newHistory = [...history, { type: 'input', text: input }];
-
-      let response = '';
-      let content = null;
-
-      switch (cmd) {
-        case 'help':
-          response = 'Available commands: about, skills, contact, projects, current_project, clear';
-          break;
-        case 'about':
-          response = 'I am a Computer Engineering student at UCLA focused on Robotics and Quantum Computing.';
-          break;
-        case 'skills':
-          response = 'Core: Java, Python, C++, Onshape, Qiskit.';
-          break;
-        case 'contact':
-          response = 'Email: darrenluu2025@gmail.com | LinkedIn: /in/dwluu';
-          break;
-        case 'projects':
-           response = 'Check out the Projects section below! Key projects: Quantum Casino, FTC Robotics, MESA Wind Car.';
-           break;
-        case 'current_project':
-           content = statusLogContent; // Re-display the status log
-           break;
-        case 'clear':
-          setHistory([]);
-          setInput('');
-          return;
-        default:
-          response = `Command not found: ${cmd}. Type "help" for list.`;
-      }
-      
-      newHistory.push({ type: 'output', text: response, content: content });
-      setHistory(newHistory);
-      setInput('');
-    }
-  };
-
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [history]);
-
-  return (
-    <div className="bg-slate-950 rounded-xl border border-slate-700 shadow-xl overflow-hidden font-mono mb-6 flex flex-col h-72">
-      <div className="bg-slate-800 px-4 py-2 flex items-center gap-2 border-b border-slate-700 shrink-0">
-        <Terminal size={14} className="text-green-400" />
-        <span className="text-xs text-slate-400">interactive_terminal</span>
-        <div className="flex gap-1.5 ml-auto">
-          <div className="w-2.5 h-2.5 rounded-full bg-red-500/50"></div>
-          <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/50"></div>
-          <div className="w-2.5 h-2.5 rounded-full bg-green-500/50"></div>
-        </div>
-      </div>
-      <div 
-        ref={scrollRef}
-        className="p-4 text-xs md:text-sm space-y-2 overflow-y-auto flex-grow custom-scrollbar"
-      >
-        {history.map((line, i) => (
-          <div key={i} className={`${line.type === 'input' ? 'text-blue-400' : 'text-slate-300'}`}>
-            {line.type === 'input' ? '> ' : ''}
-            {line.content ? line.content : line.text}
-          </div>
-        ))}
-        <div className="flex items-center gap-2 text-purple-400">
-          <span>➜</span>
-          <span className="text-blue-400">~</span>
-          <input 
-            type="text" 
-            aria-label="Terminal input"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleCommand}
-            className="bg-transparent border-none outline-none text-slate-200 flex-grow"
-            placeholder="Type command..."
-            autoComplete="off"
-          />
-        </div>
-      </div>
-    </div>
-  );
-};
+// 2. Interactive Terminal (code-split)
+const InteractiveTerminal = lazy(() => import('./components/InteractiveTerminal'));
 
 // 3. Scroll Animation Component
 const FadeInSection = ({ children }) => {
@@ -267,7 +62,7 @@ const FadeInSection = ({ children }) => {
   return (
     <div
       ref={domRef}
-      className={`transition-all duration-1000 ease-out transform ${
+      className={`transition-all duration-1000 ease-out transform motion-reduce:transition-none motion-reduce:transform-none ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
       }`}
     >
@@ -325,151 +120,8 @@ const Typewriter = ({ text, speed = 50, className }) => {
   return <span className={className}>{displayText}</span>;
 };
 
-// 6. Project Modal
-const ProjectModal = ({ project, onClose }) => {
-  const [lightboxMedia, setLightboxMedia] = useState(null);
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        if (lightboxMedia) setLightboxMedia(null);
-        else onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose, lightboxMedia]);
-
-  if (!project) return null;
-
-  return (
-    <>
-      {/* Lightbox */}
-      {lightboxMedia && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/95 backdrop-blur-md p-4 transition-all animate-in fade-in duration-200" onClick={() => setLightboxMedia(null)}>
-          <button 
-            onClick={() => setLightboxMedia(null)}
-            className="absolute top-4 right-4 p-2 bg-slate-800 rounded-full text-white hover:bg-slate-700 hover:text-blue-400 transition-colors border border-slate-700 z-50"
-          >
-            <X size={28} />
-          </button>
-          
-          <div className="relative max-w-full max-h-full flex flex-col items-center justify-center" onClick={(e) => e.stopPropagation()}>
-            {lightboxMedia.type === 'video' ? (
-              <video src={lightboxMedia.src} controls autoPlay className="max-w-[90vw] max-h-[80vh] rounded-lg border border-slate-700 shadow-2xl" />
-            ) : (
-              <img src={lightboxMedia.src} alt={lightboxMedia.label} className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg border border-slate-700 shadow-2xl" />
-            )}
-            <div className="mt-4 px-4 py-2 bg-slate-900/80 rounded-full text-slate-200 text-sm border border-slate-700 backdrop-blur-sm">
-              {lightboxMedia.label}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal */}
-      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm" onClick={onClose}>
-        <div className="bg-slate-900 border border-slate-700 w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
-          <div className="p-6 border-b border-slate-700 flex justify-between items-center bg-slate-800/50 shrink-0">
-            <div>
-              <h3 className="text-2xl font-bold text-slate-100">{project.title}</h3>
-              <span className="text-blue-400 font-mono text-sm">{project.date}</span>
-            </div>
-            <button onClick={onClose} className="p-2 hover:bg-slate-700 rounded-full transition-colors text-slate-400 hover:text-white">
-              <XCircle size={24} />
-            </button>
-          </div>
-          <div className="p-6 overflow-y-auto custom-scrollbar">
-            <p className="text-slate-300 text-lg leading-relaxed mb-6">{project.fullDescription}</p>
-            <div className="mb-8">
-              <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Technologies</h4>
-              <div className="flex flex-wrap gap-2">
-                {project.tags.map((tag, i) => (
-                  <span key={i} className="px-3 py-1 bg-slate-800 text-blue-300 rounded-full text-sm border border-slate-700">{tag}</span>
-                ))}
-              </div>
-            </div>
-            {(project.youtubeId || project.video) && (
-              <div className="mb-8">
-                <div className="flex items-center gap-3 mb-3">
-                  {project.youtubeId ? <Youtube size={20} className="text-red-500" /> : <Video size={20} className="text-blue-400" />}
-                  <span className="font-semibold text-slate-200">Project Footage</span>
-                </div>
-                <div className="rounded-xl overflow-hidden border border-slate-700 shadow-xl bg-black w-full aspect-video">
-                  {project.youtubeId ? (
-                    <iframe className="w-full h-full" src={`https://www.youtube.com/embed/${project.youtubeId}`} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
-                  ) : (
-                    <video controls className="w-full h-full" src={project.video}>Your browser does not support the video tag.</video>
-                  )}
-                </div>
-              </div>
-            )}
-            {(project.hasReport || (project.galleryImages && project.galleryImages.length > 0) || (project.codeLinks && project.codeLinks.length > 0)) && (
-              <div className="space-y-4">
-                <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Project Documentation</h4>
-                <div className="grid gap-3">
-                  {project.codeLinks && project.codeLinks.map((link, idx) => (
-                    <a key={idx} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 bg-slate-800/50 rounded-xl border border-slate-700 hover:border-blue-500 hover:bg-slate-800 transition-all group">
-                      <div className="p-2 bg-blue-900/30 text-blue-400 rounded-lg group-hover:text-white transition-colors"><Github size={20} /></div>
-                      <div><div className="font-semibold text-slate-200">{link.label}</div><div className="text-xs text-slate-500">Source Code</div></div>
-                      <ExternalLink size={16} className="ml-auto text-slate-500 group-hover:text-blue-400" />
-                    </a>
-                  ))}
-                  {project.hasReport && (
-                    <a href={project.reportLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 bg-slate-800/50 rounded-xl border border-slate-700 hover:border-blue-500 hover:bg-slate-800 transition-all group">
-                      <div className="p-2 bg-blue-900/30 text-blue-400 rounded-lg group-hover:text-white transition-colors"><FileText size={20} /></div>
-                      <div><div className="font-semibold text-slate-200">Technical Design Report</div><div className="text-xs text-slate-500">PDF Documentation</div></div>
-                      <ExternalLink size={16} className="ml-auto text-slate-500 group-hover:text-blue-400" />
-                    </a>
-                  )}
-                  {project.galleryImages && project.galleryImages.length > 0 && (
-                    <div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700">
-                      <div className="flex items-center gap-3 mb-3">
-                        <ImageIcon size={20} className="text-blue-400" />
-                        <span className="font-semibold text-slate-200">Gallery <span className="text-slate-500 font-normal text-sm ml-2">(Tap to enlarge)</span></span>
-                      </div>
-                      <div className={`grid gap-3 ${project.galleryImages.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
-                          {project.galleryImages.map((media, idx) => (
-                            <div
-                              key={idx}
-                              onClick={() => setLightboxMedia(media)}
-                              tabIndex={0}
-                              role="button"
-                              aria-label={`Open ${media.label} in lightbox`}
-                              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { setLightboxMedia(media); e.preventDefault(); } }}
-                              className="aspect-video bg-slate-900 rounded-lg flex items-center justify-center text-slate-600 border border-slate-800 overflow-hidden relative group cursor-zoom-in hover:border-blue-500/50 transition-all"
-                            >
-                              {media.type === 'video' ? (
-                                <div className="relative w-full h-full">
-                                  <video src={media.src} className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" muted />
-                                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-transparent transition-colors">
-                                    <div className="p-2 bg-black/50 rounded-full text-white"><Video size={24} /></div>
-                                  </div>
-                                </div>
-                              ) : (
-                                <>
-                                  <img src={media.src} alt={media.label} className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-500" />
-                                  <div className="absolute top-2 right-2 p-1.5 bg-black/60 rounded-lg text-white opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm"><Maximize2 size={14} /></div>
-                                  <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/80 to-transparent text-xs text-center text-white">{media.label}</div>
-                                </>
-                              )}
-                            </div>
-                          ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-          <div className="p-4 border-t border-slate-700 bg-slate-950/50 flex justify-end shrink-0">
-            <button onClick={onClose} className="px-5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-medium transition-colors">Close</button>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-};
+// 6. Project Modal (code-split)
+const ProjectModal = lazy(() => import('./components/ProjectModal'));
 
 // --- MAIN PORTFOLIO COMPONENT ---
 
@@ -674,7 +326,9 @@ const Portfolio = () => {
 
       {/* 2. Interactive Background */}
       <div className="fixed inset-0 z-0 pointer-events-none print:hidden">
-        <ParticleBackground />
+        <Suspense fallback={null}>
+          <ParticleBackground />
+        </Suspense>
       </div>
 
       {/* Accessibility Skip Link */}
@@ -692,11 +346,13 @@ const Portfolio = () => {
 
       {/* Modal Overlay */}
       {selectedProject && (
-        <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />
+        <Suspense fallback={null}>
+          <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />
+        </Suspense>
       )}
       
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 bg-slate-950/70 backdrop-blur-lg border-b border-slate-800 z-50 h-16 transition-all print:hidden">
+      <nav role="navigation" aria-label="Main navigation" className="fixed top-0 left-0 right-0 bg-slate-950/70 backdrop-blur-lg border-b border-slate-800 z-50 h-16 transition-all print:hidden">
         <div className="max-w-6xl mx-auto px-6 h-full flex justify-between items-center">
           <div className="text-xl font-bold text-slate-100 tracking-tight flex items-center gap-2">
             <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-slate-800 rounded flex items-center justify-center text-white font-bold">DL</div>
@@ -733,7 +389,7 @@ const Portfolio = () => {
         </div>
       </nav>
 
-      <main className="pt-16 relative z-10">
+      <main role="main" className="pt-16 relative z-10">
         
         {/* Hero Section */}
         <section id="home" className="min-h-[90vh] flex items-center justify-center px-6 relative overflow-hidden">
@@ -837,7 +493,9 @@ const Portfolio = () => {
 
                   {/* INTERACTIVE TERMINAL */}
                   <div className="print:hidden">
-                     <InteractiveTerminal />
+                    <Suspense fallback={null}>
+                      <InteractiveTerminal />
+                    </Suspense>
                   </div>
 
                   {/* PERSONAL INTERESTS CARD */}
@@ -1046,7 +704,7 @@ const Portfolio = () => {
                     role="button"
                     aria-label={`Open project ${project.title} details`}
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { setSelectedProject(project); e.preventDefault(); } }}
-                    className="bg-slate-800 rounded-xl overflow-hidden border border-slate-700 hover:border-blue-500/50 transition-all group hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-900/10 flex flex-col cursor-pointer print:break-inside-avoid"
+                    className="bg-slate-800 rounded-xl overflow-hidden border border-slate-700 hover:border-blue-500/50 transition-all group hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-900/10 flex flex-col cursor-pointer print:break-inside-avoid focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   >
                     <div className="p-6 flex flex-col h-full">
                       <div className="flex justify-between items-start mb-4">
@@ -1308,7 +966,7 @@ const Portfolio = () => {
       </main>
 
       {/* Footer */}
-      <footer className="py-8 bg-slate-950 border-t border-slate-800 text-center text-slate-500 text-sm relative z-10">
+      <footer role="contentinfo" className="py-8 bg-slate-950 border-t border-slate-800 text-center text-slate-500 text-sm relative z-10">
         <div className="max-w-4xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-left">
             <p>© {new Date().getFullYear()} Darren Luu. All rights reserved.</p>
