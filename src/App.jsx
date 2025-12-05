@@ -168,7 +168,7 @@ const InteractiveTerminal = () => {
           response = 'I am a Computer Engineering student at UCLA focused on Robotics and Quantum Computing.';
           break;
         case 'skills':
-          response = 'Core: Java, Python, C++, Onshape, Qiskit, React.';
+          response = 'Core: Java, Python, C++, Onshape, Qiskit.';
           break;
         case 'contact':
           response = 'Email: darrenluu2025@gmail.com | LinkedIn: /in/dwluu';
@@ -1130,6 +1130,7 @@ const Portfolio = () => {
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-slate-200 border-b border-slate-700 pb-2">Programming</h3>
                   <ul className="space-y-2">
+                    <li className="text-slate-400 flex items-center gap-2 group hover:text-blue-300 transition-colors cursor-help" title="Learned from: UCLA, COM SCI 31"><div className="w-1.5 h-1.5 bg-blue-500 rounded-full group-hover:scale-150 transition-transform"></div> C++</li>
                     <li className="text-slate-400 flex items-center gap-2 group hover:text-blue-300 transition-colors cursor-help" title="Used in: FTC Robotics"><div className="w-1.5 h-1.5 bg-blue-500 rounded-full group-hover:scale-150 transition-transform"></div> Java</li>
                     <li className="text-slate-400 flex items-center gap-2 group hover:text-blue-300 transition-colors cursor-help" title="Used in: Quantum Casino, Donkey Racers"><div className="w-1.5 h-1.5 bg-blue-500 rounded-full group-hover:scale-150 transition-transform"></div> Python</li>
                     <li className="text-slate-400 flex items-center gap-2 group hover:text-blue-300 transition-colors cursor-help" title="Used in: Quantum Casino"><div className="w-1.5 h-1.5 bg-blue-500 rounded-full group-hover:scale-150 transition-transform"></div> Qiskit</li>
@@ -1143,6 +1144,7 @@ const Portfolio = () => {
                     <li className="text-slate-400 flex items-center gap-2 group hover:text-blue-300 transition-colors cursor-help" title="Used in: Seaperch ROV"><div className="w-1.5 h-1.5 bg-blue-500 rounded-full group-hover:scale-150 transition-transform"></div> Google Workspace</li>
                     <li className="text-slate-400 flex items-center gap-2 group hover:text-blue-300 transition-colors cursor-help" title="Used in: Seaperch ROV"><div className="w-1.5 h-1.5 bg-blue-500 rounded-full group-hover:scale-150 transition-transform"></div> Microsoft Office</li>
                     <li className="text-slate-400 flex items-center gap-2 group hover:text-blue-300 transition-colors cursor-help" title="Used in: FTC Robotics"><div className="w-1.5 h-1.5 bg-blue-500 rounded-full group-hover:scale-150 transition-transform"></div> Android Studio</li>
+                    <li className="text-slate-400 flex items-center gap-2 group hover:text-blue-300 transition-colors cursor-help" title="Learned from: UCLA, COM SCI 31"><div className="w-1.5 h-1.5 bg-blue-500 rounded-full group-hover:scale-150 transition-transform"></div> Visual Studio</li>
                   </ul>
                 </div>
 
