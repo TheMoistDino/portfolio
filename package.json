@@ -1,12 +1,10 @@
 {
   "name": "my-portfolio",
-  "homepage": "https://TheMoistDino.github.io/portfolio/",
+  "homepage": "https://portfolio.darrenluu.com",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist",
     "convert-images": "node scripts/convert-images.js",
     "dev": "vite",
     "build": "vite build",
