@@ -14,16 +14,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          # needed for creating/updating branches and tags
-          fetch-depth: 0
-          # ensure the action has push credentials
-          persist-credentials: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20' # Upgraded for Vite 7 compatibility
           cache: 'npm'
 
       - name: Install dependencies
@@ -32,24 +27,11 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Ensure CNAME in build output
-        run: |
-          if [ -f CNAME ]; then
-            mkdir -p dist
-            cp CNAME dist/CNAME
-          fi
-
-      - name: Configure git for deploy
-        run: |
-          git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-
-      - name: Deploy to GitHub Pages (peaceiris)
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4 # Updated to v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: ./dist
-          cname: 'portfolio.darrenluu.com'
+          cname: 'portfolio.darrenluu.com' # This handles the CNAME file automatically
           allow_empty_commit: true
-
