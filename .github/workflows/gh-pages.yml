@@ -18,7 +18,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20' # Upgraded for Vite 7 compatibility
+          node-version: '20' # Required for Vite 7
           cache: 'npm'
 
       - name: Install dependencies
@@ -28,10 +28,10 @@ jobs:
         run: npm run build
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4 # Updated to v4
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: ./dist
-          cname: 'portfolio.darrenluu.com' # This handles the CNAME file automatically
+          cname: 'portfolio.darrenluu.com'
           allow_empty_commit: true

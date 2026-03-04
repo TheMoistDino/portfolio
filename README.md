@@ -1,52 +1,28 @@
-# View the web portfolio at
-## https://portfolio.darrenluu.com/
+# Darren Luu | Personal Portfolio
 
-# React + Vite
+An interactive, developer-themed portfolio website built with React 19 and Vite. This project features a custom command-line interface (CLI) style terminal and a responsive project showcase.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 🚀 Live Site
+Check it out at: [portfolio.darrenluu.com](https://portfolio.darrenluu.com)
 
-Currently, two official plugins are available:
+## 🛠️ Tech Stack
+- **Framework:** React 19 (Hooks, Functional Components)
+- **Build Tool:** Vite (Ultra-fast HMR and bundling)
+- **Styling:** Tailwind CSS (Utility-first styling)
+- **Icons:** Lucide React
+- **Deployment:** GitHub Actions + GitHub Pages
 
+## 📂 Project Structure
+- `/src/components`: Contains the Interactive Terminal, Particle Background, and Project Modals.
+- `/public`: Stores static assets including `resume.pdf` and project images.
+- `/scripts`: Utility scripts for image conversion and asset management.
 
-## React Compiler
+## 🔄 Deployment Workflow
+This project uses **GitHub Actions** for CI/CD. Manual deployment via `npm run deploy` is disabled to prevent branch synchronization conflicts.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-
-## Image optimization (WebP)
-
-This project can serve WebP images (preferred) while falling back to original formats. A helper script is provided to generate WebP copies of images.
-
-Requirements:
-- ImageMagick (`magick`) on PATH for Windows PowerShell.
-
-Convert images under `src/assets` (or `public`) to WebP:
-
-```powershell
-.
-\scripts\convert-images.ps1 -Path "src/assets" -Quality 80
-```
-
-After running that script, the code will automatically try to load the `.webp` sibling via the `<picture>` element; if a `.webp` file is not present the browser will load the original image.
-
-Node-based conversion (preferred)
-
-If you prefer an npm-based converter (works cross-platform) use the included Node script which uses `sharp`:
-
-Install dependencies first (on your machine):
-
-```powershell
-npm ci
-npm install --save-dev sharp
-```
-
-Then run the converter (defaults to `src/assets`):
-
-```powershell
-npm run convert-images -- --path src/assets,public --quality 80
-```
-
-The script will create `.webp` siblings next to each source image and skip existing up-to-date `.webp` files.
+### How to push updates:
+1. **Local Development:** Run `npm run dev` to preview changes locally.
+2. **Commit Changes:** Stage your files and commit them to the `main` branch.
+   ```bash
+   git add .
+   git commit -m "Update: Added new hackathon win"
