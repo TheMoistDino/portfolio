@@ -429,20 +429,20 @@ const Portfolio = () => {
         {/* --- STATS BAR --- */}
         <section className="py-10 border-y border-slate-800 bg-slate-900/30 print:hidden">
           <FadeInSection>
-            <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-3 gap-8 text-center">
-              <div className="space-y-1">
+            <div className="max-w-6xl mx-auto px-6 flex flex-wrap justify-center gap-8 text-center">
+              <div className="space-y-1 min-w-0" style={{flex: '0 1 240px'}}>
                 <div className="text-3xl font-bold text-white flex items-center justify-center gap-2">
                   <TrendingUp className="text-green-400" size={24} /> 400%
                 </div>
                 <div className="text-sm text-slate-400 uppercase tracking-wide">Club Growth</div>
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1 min-w-0" style={{flex: '0 1 240px'}}>
                 <div className="text-3xl font-bold text-white flex items-center justify-center gap-2">
                   <Users className="text-blue-400" size={24} /> 50+
                 </div>
                 <div className="text-sm text-slate-400 uppercase tracking-wide">Students Mentored</div>
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1 min-w-0" style={{flex: '0 1 240px'}}>
                 <div className="text-3xl font-bold text-white flex items-center justify-center gap-2">
                   <Zap className="text-purple-400" size={24} /> 100%
                 </div>
@@ -491,30 +491,30 @@ const Portfolio = () => {
                     </ul>
                   </div>
 
-                  {/* INTERACTIVE TERMINAL */}
-                  <div className="print:hidden">
-                    <Suspense fallback={null}>
-                      <InteractiveTerminal />
-                    </Suspense>
-                  </div>
-
-                  {/* PERSONAL INTERESTS CARD */}
-                  <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl print:hidden">
-                    <div className="flex items-center gap-2 mb-4 border-b border-slate-700 pb-2">
-                      <Smile className="text-yellow-400" size={20} />
-                      <h3 className="text-white font-semibold">Personal Interests</h3>
+                    {/* PERSONAL INTERESTS CARD */}
+                    <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl print:hidden">
+                      <div className="flex items-center gap-2 mb-4 border-b border-slate-700 pb-2">
+                        <Smile className="text-yellow-400" size={20} />
+                        <h3 className="text-white font-semibold">Personal Interests</h3>
+                      </div>
+                      <ul className="space-y-2 text-sm text-slate-400">
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-purple-400 rounded-full"></div>
+                          <span>Solving Rubik's Cubes</span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-blue-400 rounded-full"></div>
+                          <span>Reading Manga & Watching Anime</span>
+                        </li>
+                      </ul>
                     </div>
-                    <ul className="space-y-2 text-sm text-slate-400">
-                      <li className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 bg-purple-400 rounded-full"></div>
-                        <span>Solving Rubik's Cubes</span>
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 bg-blue-400 rounded-full"></div>
-                        <span>Reading Manga & Watching Anime</span>
-                      </li>
-                    </ul>
-                  </div>
+
+                    {/* INTERACTIVE TERMINAL */}
+                    <div className="print:hidden">
+                      <Suspense fallback={null}>
+                        <InteractiveTerminal />
+                      </Suspense>
+                    </div>
 
                 </div>
               </div>

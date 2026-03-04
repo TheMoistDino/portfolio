@@ -7,8 +7,6 @@ This template provides a minimal setup to get React working in Vite with HMR and
 
 Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
 ## React Compiler
 
@@ -17,3 +15,38 @@ The React Compiler is not enabled on this template because of its impact on dev 
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+## Image optimization (WebP)
+
+This project can serve WebP images (preferred) while falling back to original formats. A helper script is provided to generate WebP copies of images.
+
+Requirements:
+- ImageMagick (`magick`) on PATH for Windows PowerShell.
+
+Convert images under `src/assets` (or `public`) to WebP:
+
+```powershell
+.
+\scripts\convert-images.ps1 -Path "src/assets" -Quality 80
+```
+
+After running that script, the code will automatically try to load the `.webp` sibling via the `<picture>` element; if a `.webp` file is not present the browser will load the original image.
+
+Node-based conversion (preferred)
+
+If you prefer an npm-based converter (works cross-platform) use the included Node script which uses `sharp`:
+
+Install dependencies first (on your machine):
+
+```powershell
+npm ci
+npm install --save-dev sharp
+```
+
+Then run the converter (defaults to `src/assets`):
+
+```powershell
+npm run convert-images -- --path src/assets,public --quality 80
+```
+
+The script will create `.webp` siblings next to each source image and skip existing up-to-date `.webp` files.

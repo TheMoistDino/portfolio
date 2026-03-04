@@ -153,7 +153,7 @@ const ProjectModal = ({ project, onClose }) => {
                               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { setLightboxMedia(media); e.preventDefault(); } }}
                               className="aspect-video bg-slate-900 rounded-lg flex items-center justify-center text-slate-600 border border-slate-800 overflow-hidden relative group cursor-zoom-in hover:border-blue-500/50 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                             >
-                              {media.type === 'video' ? (
+                                {media.type === 'video' ? (
                                 <div className="relative w-full h-full">
                                   <video src={media.src} className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" muted />
                                   <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-transparent transition-colors">
