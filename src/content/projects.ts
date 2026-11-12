@@ -15,6 +15,8 @@ export type Project = {
   /** Shown as a badge, e.g. "2nd place, IDEA Hacks 2026". */
   award?: string;
   images: { src: string; alt: string }[];
+  /** A live production site (shown as "Live site"). */
+  siteUrl?: string;
   demoUrl?: string;
   repoUrl?: string;
   devpostUrl?: string;
@@ -64,16 +66,19 @@ export const projects: Project[] = [
     hue: 250,
   },
   {
-    slug: "hkn-opportunities",
-    title: "HKN Opportunities Platform",
-    tagline: "A full-stack hub for IEEE-HKN events, scholarships and ways to get involved.",
+    slug: "hkn-webmaster",
+    title: "HKN Webmaster",
+    tagline: "Building and maintaining the full-stack website for UCLA's IEEE-HKN chapter.",
     description: [
-      "As IEEE-HKN webmaster I built a centralized Opportunities platform in Go, MySQL and Tailwind CSS. I designed normalized database schemas, migrations and authenticated endpoints for events, scholarships and involvement initiatives.",
-      "Officers manage the content through role-based admin dashboards with full create, read, update and delete workflows.",
+      "As webmaster for UCLA's IEEE-HKN chapter I build new features for the chapter website, which runs on Go, MySQL and Tailwind CSS.",
+      "I created the Opportunities page, a central hub for events, scholarships and involvement initiatives. It is backed by normalized database schemas, migrations and authenticated endpoints, and officers manage its content through role-based admin dashboards with full create, read, update and delete workflows.",
+      "I also added a resume-upload feature and a forgot-password flow so members can reset their own passwords.",
     ],
     highlights: [
+      "Opportunities page for events, scholarships and involvement, with officer admin dashboards",
+      "Resume uploads for members",
+      "Forgot-password flow over SMTP with hashed tokens, expiry checks and a 30-second cooldown",
       "Strict input and URL validation, with CSRF protection on every state-changing endpoint",
-      "Self-service password reset over SMTP with hashed tokens, expiry checks and a 30-second cooldown",
       "Legacy routes kept working through redirects",
     ],
     tech: ["Go", "MySQL", "Tailwind CSS"],
@@ -81,6 +86,7 @@ export const projects: Project[] = [
     when: "Apr 2026 – Present",
     role: "Webmaster, IEEE-HKN",
     images: [],
+    siteUrl: "https://hkn.ee.ucla.edu/",
     hue: 150,
   },
   {

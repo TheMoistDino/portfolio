@@ -21,6 +21,7 @@ export function ProjectArt({ project, className = "" }: { project: Project; clas
 export function ProjectBody({ project, as: Heading = "h2" }: { project: Project; as?: "h1" | "h2" }) {
   const shot = project.images[0];
   const links = [
+    { label: "Live site", href: project.siteUrl },
     { label: "Live demo", href: project.demoUrl },
     { label: "Devpost", href: project.devpostUrl },
     { label: "Source", href: project.repoUrl },
